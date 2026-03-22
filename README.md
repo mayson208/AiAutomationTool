@@ -1,287 +1,251 @@
-# STUDIO — AI YouTube Automation Dashboard
+<div align="center">
 
-STUDIO is a one-click YouTube video production dashboard built with Python Flask. Enter a topic, choose your niche, click Generate — and STUDIO automatically writes a niche-optimized script, produces a voiceover with matching voice settings, generates multiple thumbnail variations, downloads stock footage, assembles the final video, and optionally uploads it to YouTube.
+# 🎬 STUDIO
+### AI-Powered YouTube Automation Dashboard
 
----
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![Flask](https://img.shields.io/badge/Flask-3.x-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com)
+[![Claude](https://img.shields.io/badge/Claude-Sonnet_4.6-CC785C?style=for-the-badge)](https://anthropic.com)
+[![ElevenLabs](https://img.shields.io/badge/ElevenLabs-TTS-FF6B35?style=for-the-badge)](https://elevenlabs.io)
+[![DALL·E](https://img.shields.io/badge/DALL·E_3-Thumbnails-412991?style=for-the-badge&logo=openai&logoColor=white)](https://openai.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 
-## Features
+**Enter a topic → Get a finished YouTube video. Fully automated.**
 
-### Core Pipeline
-- **One-Click Pipeline** — Full end-to-end video production with niche + quality tier selection
-- **Parallel Processing** — Thumbnail generation and footage search run simultaneously during voiceover production
-- **Retry Logic** — Each pipeline step retries up to 3 times with exponential backoff
-- **Quality Tiers** — Fast (speed priority), Balanced (default), Premium (max quality)
+[Features](#-features) · [Quick Start](#-quick-start) · [Niches](#-niche-support--cpm-rates) · [API Keys](#-api-keys) · [Architecture](#-architecture)
 
-### Script Writer
-- **Niche Optimization** — 11 niches with tailored tone, style, and pacing guidelines
-- **Hook Generator** — Generates 3 hook options (Shock, Question, Story formulas) to choose from
-- **Humanizer Pass** — Second Claude pass removes AI writing patterns for more natural dialogue
-- **Retention Triggers** — Pattern interrupts, open loops, and curiosity gaps built into every script
-- **Auto-Save** — Scripts saved as JSON to `outputs/scripts/` organized by niche and date
-- **CPM Display** — Shows niche CPM range on every generated script
-
-### Voiceover Generator
-- **Niche Voice Settings** — 11 presets with research-backed stability/similarity/style values
-- **Model Upgrade** — Uses `eleven_multilingual_v2` (higher quality than v1)
-- **Settings Preview** — Live preview of voice settings when selecting niche
-- **Script Prefill** — Auto-fills from last generated script
-
-### Thumbnail Generator
-- **Niche Visual Styles** — DALL-E 3 prompts tailored to each niche's aesthetic
-- **A/B Testing** — Generate 1-3 variations in one click for split testing
-- **Organized Storage** — Thumbnails saved to `outputs/thumbnails/`
-
-### SEO & Metadata (NEW)
-- **5 Title Options** — Each scored and ranked by SEO strength
-- **Full Description** — 250-350 word SEO-optimized description with hashtags
-- **Tag Generator** — 20-25 tags including long-tail phrases
-- **Click-to-Copy** — All titles, descriptions, and tags copyable with one click
-- **CPM Reference Table** — Full niche CPM/RPM/competition table
-
-### Content Calendar (NEW)
-- **30-Day Calendar** — AI-generated posting schedule with topic ideas per niche
-- **Content Types** — Mix of evergreen (70%), trending (30%), and seasonal content
-- **Topic Bank** — Generate 25-100 ready-to-use video titles per niche
-- **Niche Frequencies** — Pre-set optimal posting frequencies by niche
-
-### Compliance & Safety (NEW)
-- **Policy Checker** — Flags demonetization keywords, copyright triggers, and low-value signals
-- **Risk Scoring** — 0-100 risk score with color-coded severity
-- **AI Disclosure** — Standard YouTube AI disclosure text ready to copy
-- **Music License Checker** — Verify if a music source is safe for monetized content
-- **Content Guidelines** — Visual reference for always-safe, review-needed, and avoid content
-
-### Other Tools
-- **Stock Footage** — Search and download royalty-free clips from Pexels
-- **Video Assembler** — MoviePy stitches footage and voiceover into a finished MP4
-- **YouTube Uploader** — Uploads directly to your channel via YouTube Data API v3
-- **Analytics Dashboard** — View subscriber count, total views, recent video stats, and CPM reference table
-- **History** — Browse all previously generated videos
-- **Settings** — Manage all API keys from the UI (saved to .env)
+</div>
 
 ---
 
-## Niche Support
+## ✨ What STUDIO Does
 
-| Niche | CPM Range | Optimal Length | Posts/Week |
-|-------|-----------|----------------|------------|
-| Finance & Investing | $15-50 | 10-20 min | 2-3x |
-| Tech & Business | $12-25 | 10-15 min | 2-3x |
-| Science & Space | $6-12 | 8-15 min | 2-3x |
-| Self Improvement | $5-10 | 8-15 min | 3-4x |
-| History | $5-10 | 10-25 min | 2-3x |
-| Motivational & Quotes | $5-10 | 3-8 min | Daily |
-| Facts / Did You Know | $4-10 | 5-15 min | 3-5x |
-| True Crime | $4-9 | 15-30 min | 2-3x |
-| News Summary | $4-8 | 5-10 min | Daily |
-| Top 10 Lists | $4-8 | 8-15 min | 3-5x |
-| Horror & Scary Stories | $3-7 | 10-20 min | 1-2x |
-| Meditation & Sleep | $3-6 | 20-60 min | 2-3x |
+STUDIO is a one-click YouTube production pipeline. You type a topic — STUDIO writes the script, records the voiceover, generates thumbnails, sources stock footage, assembles the video, and uploads it to YouTube. Every step is niche-optimized using research-backed settings for 11 content categories.
+
+```
+Topic Input  →  Script (Claude AI)  →  Voiceover (ElevenLabs)
+     →  Thumbnail (DALL-E 3)  →  Footage (Pexels)  →  Video (MoviePy)  →  YouTube ✓
+```
 
 ---
 
-## Tech Stack
+## 🚀 Features
 
-| Layer | Technology |
-|-------|-----------|
-| Backend | Python 3.12, Flask 3.x |
-| AI Script | Anthropic Claude (claude-sonnet-4-6) |
-| AI Image | OpenAI DALL-E 3 |
-| Text-to-Speech | ElevenLabs (eleven_multilingual_v2) |
-| Stock Footage | Pexels API |
-| Video Editing | MoviePy |
-| YouTube | Google YouTube Data API v3 |
-| Styling | Custom dark CSS (YouTube red/white theme) |
+### ⚡ One-Click Pipeline
+- Full end-to-end automation in a single click
+- **Real-time SSE progress** — watch each step complete live in the browser
+- **Parallel processing** — thumbnail generation and footage search run simultaneously
+- **3-step retry logic** with exponential backoff on every API call
+- **3 Quality Tiers** — Fast · Balanced · Premium
+
+### 📝 Script Writer
+| Feature | Detail |
+|---------|--------|
+| Hook Generator | 3 hooks per topic — Shock, Question, and Story formulas |
+| Niche Optimization | 11 niches with tailored tone, pacing, and retention triggers |
+| Humanizer Pass | Second Claude pass removes AI patterns for natural dialogue |
+| Auto-Save | Scripts saved as JSON to `outputs/scripts/` |
+| CPM Preview | Shows expected CPM range for the selected niche |
+
+### 🎙️ Voice Library
+- **Full ElevenLabs library sync** — browse every voice you have access to
+- **Voice cards** with gender, accent, age, use-case tags
+- **In-browser preview** — waveform animation with niche-matched sample text
+- **Favorites** — star voices for quick access
+- **Per-voice settings** — custom stability/similarity/style per niche
+- **Voice cloning** — upload audio samples, consent-gated clone workflow
+- **Usage tracking** — see which voices you use most
+- **Global voice bar** — active voice shown on every page
+
+### 🖼️ Thumbnail Generator
+- DALL-E 3 with **niche-specific visual style prompts**
+- **A/B test** up to 3 variations per video
+- CTR scoring with improvement tips
+- Saved to `outputs/thumbnails/`
+
+### 📊 SEO & Metadata
+- **5 title options** — each scored and ranked by SEO strength
+- **Full 300-word description** with hashtags and timestamps
+- **20-25 tags** including long-tail phrases
+- Click-to-copy on every field
+- Full niche CPM/RPM reference table
+
+### 📅 Content Calendar
+- **30-day AI content schedule** with evergreen/trending/seasonal mix
+- **Topic bank** — generate 25-100 ready-to-use video titles
+- Niche-optimized posting frequencies built in
+
+### ✅ Compliance & Safety
+- **Policy checker** — risk score 0-100 with specific issue flagging
+- Demonetization keyword detection
+- Standard **AI disclosure text** for YouTube descriptions
+- Music license source checker
+- Content guideline reference card
+
+### 📈 Analytics Dashboard
+- Live channel stats (subscribers, views, watch time)
+- Recent video performance table
+- CPM reference by niche
 
 ---
 
-## Setup
+## ⚡ Quick Start
 
-### 1. Clone the repository
+### 1. Clone & install
 
 ```bash
 git clone https://github.com/mayson208/AiAutomationTool.git
 cd AiAutomationTool
-```
-
-### 2. Create a virtual environment
-
-```bash
 python -m venv venv
-# Windows
-venv\Scripts\activate
-# macOS/Linux
-source venv/bin/activate
-```
-
-### 3. Install dependencies
-
-```bash
+venv\Scripts\activate        # Windows
+# source venv/bin/activate   # macOS / Linux
 pip install -r requirements.txt
 ```
 
-### 4. Configure API keys
-
-Copy the template and fill in your keys:
+### 2. Add API keys
 
 ```bash
 copy .env.example .env
 ```
 
-Edit `.env` with your actual API keys:
+Open `.env` and fill in:
 
-```
+```env
 ANTHROPIC_API_KEY=sk-ant-...
-ELEVENLABS_API_KEY=your-key-here
-ELEVENLABS_VOICE_ID=your-voice-id-here
+ELEVENLABS_API_KEY=your-key
+ELEVENLABS_VOICE_ID=your-voice-id
 OPENAI_API_KEY=sk-...
-PEXELS_API_KEY=your-pexels-key
-YOUTUBE_CLIENT_ID=your-google-client-id
-YOUTUBE_CLIENT_SECRET=your-google-client-secret
-FLASK_SECRET_KEY=your-random-secret-string
+PEXELS_API_KEY=your-key
+FLASK_SECRET_KEY=any-random-string
 ```
 
-You can also set keys from the Settings page inside the app.
+> You can also set keys from the **Settings** page inside the app — no file editing needed.
 
-### 5. YouTube OAuth Setup (for upload and analytics)
-
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a project and enable the **YouTube Data API v3**
-3. Create OAuth 2.0 credentials (Desktop application type)
-4. Download `client_secrets.json` and place it in the project root
-5. On first use, a browser window will open for authorization
-
-### 6. Run the app
+### 3. Run
 
 ```bash
 python app.py
+# or double-click run.bat on Windows
 ```
 
-Open your browser to: **http://localhost:5000**
+Open **http://localhost:5000** in your browser.
+
+### 4. Select a voice
+
+Go to **Voice Library → Sync** to load your ElevenLabs voices, preview them, and set one as active. All voiceover generation will use the active voice automatically.
 
 ---
 
-## API Keys — Where to Get Them
+## 🎯 Niche Support & CPM Rates
 
-| Key | Source |
-|-----|--------|
-| `ANTHROPIC_API_KEY` | [console.anthropic.com](https://console.anthropic.com/) |
-| `ELEVENLABS_API_KEY` | [elevenlabs.io](https://elevenlabs.io/) — Profile > API Keys |
-| `ELEVENLABS_VOICE_ID` | ElevenLabs — Voice Library > click a voice > ID in URL |
-| `OPENAI_API_KEY` | [platform.openai.com](https://platform.openai.com/api-keys) |
-| `PEXELS_API_KEY` | [pexels.com/api](https://www.pexels.com/api/) |
-| `YOUTUBE_CLIENT_ID/SECRET` | [Google Cloud Console](https://console.cloud.google.com/) — APIs & Services > Credentials |
+| Niche | CPM Range | Optimal Length | Posts/Week | Voice Style |
+|-------|-----------|:--------------:|:----------:|-------------|
+| 💰 Finance & Investing | **$15–50** | 10–20 min | 2–3× | Authoritative & measured |
+| 🧠 Science & Space | $6–12 | 8–15 min | 2–3× | Informative & wonder-inducing |
+| 💪 Self Improvement | $5–10 | 8–15 min | 3–4× | Warm & encouraging |
+| 📜 History | $5–10 | 10–25 min | 2–3× | Documentary storytelling |
+| 🔥 Motivational | $5–10 | 3–8 min | Daily | Energetic & passionate |
+| 💡 Facts / Did You Know | $4–10 | 5–15 min | 3–5× | Engaging & curious |
+| 🔍 True Crime | $4–9 | 15–30 min | 2–3× | Serious & dramatic |
+| 📰 News Summary | $4–8 | 5–10 min | Daily | Professional & clear |
+| 🏆 Top 10 Lists | $4–8 | 8–15 min | 3–5× | Entertaining & confident |
+| 👻 Horror & Scary | $3–7 | 10–20 min | 1–2× | Tense & atmospheric |
+| 🧘 Meditation & Sleep | $3–6 | 20–60 min | 2–3× | Calm & soothing |
 
 ---
 
-## Project Structure
+## 🔑 API Keys
+
+| Key | Where to Get It | Cost |
+|-----|----------------|------|
+| `ANTHROPIC_API_KEY` | [console.anthropic.com](https://console.anthropic.com/) | Pay-per-use |
+| `ELEVENLABS_API_KEY` | [elevenlabs.io](https://elevenlabs.io/) → Profile → API Keys | Free tier available |
+| `ELEVENLABS_VOICE_ID` | ElevenLabs → Voice Library → click voice → copy ID | — |
+| `OPENAI_API_KEY` | [platform.openai.com/api-keys](https://platform.openai.com/api-keys) | Pay-per-use |
+| `PEXELS_API_KEY` | [pexels.com/api](https://www.pexels.com/api/) | **Free** |
+| `YOUTUBE_CLIENT_ID/SECRET` | Google Cloud Console → YouTube Data API v3 | **Free** |
+
+> **Minimum to get started:** `ANTHROPIC_API_KEY` + `ELEVENLABS_API_KEY` + `ELEVENLABS_VOICE_ID` + `OPENAI_API_KEY` + `PEXELS_API_KEY`
+>
+> YouTube upload keys are optional — skip them to use everything else.
+
+---
+
+## 🏗️ Architecture
 
 ```
 AiAutomationTool/
-├── app.py                    # Flask application and all routes
-├── config.py                 # Centralised settings and API key loading
-├── pipeline.py               # Full automation orchestrator (parallel, retry logic)
-├── script_writer.py          # Claude AI script generation with niche optimization
-├── voiceover.py              # ElevenLabs TTS with niche voice settings
-├── thumbnail.py              # DALL-E 3 thumbnail generation with niche styles
-├── footage.py                # Pexels stock footage search and download
-├── video_assembler.py        # MoviePy video assembly
-├── youtube_uploader.py       # YouTube Data API v3 uploader
-├── analytics.py              # YouTube channel analytics
-├── seo.py                    # SEO package generator (NEW)
-├── content_calendar.py       # 30-day content calendar generator (NEW)
-├── compliance.py             # Policy checker and AI disclosure manager (NEW)
-├── requirements.txt          # Python dependencies
-├── .env                      # API keys (gitignored)
-├── .env.example              # Template for .env
-├── templates/
-│   ├── base.html             # Sidebar layout and navigation
-│   ├── index.html            # One-click pipeline page
-│   ├── script.html           # Script writer page (with hook generator)
-│   ├── voiceover.html        # Voiceover generator page (niche settings)
-│   ├── thumbnail.html        # Thumbnail generator page (variations)
-│   ├── footage.html          # Stock footage search page
-│   ├── seo.html              # SEO & metadata page (NEW)
-│   ├── calendar.html         # Content calendar page (NEW)
-│   ├── compliance.html       # Compliance & safety page (NEW)
-│   ├── analytics.html        # Channel analytics + CPM table
-│   ├── history.html          # Video history page
-│   └── settings.html         # API key settings page
-├── static/
-│   ├── css/style.css         # Dark YouTube-style stylesheet
-│   └── js/main.js            # Pipeline progress animation
+├── app.py                    # Flask routes (all endpoints)
+├── config.py                 # API keys, paths, constants
+│
+├── pipeline.py               # ⚡ Orchestrator — parallel + retry
+├── script_writer.py          # 📝 Claude AI script + hook generator
+├── voiceover.py              # 🎙️ ElevenLabs TTS (niche-optimized)
+├── voice_manager.py          # 🎛️ Voice library, favorites, cloning
+├── thumbnail.py              # 🖼️ DALL-E 3 thumbnails (A/B variations)
+├── footage.py                # 🎬 Pexels stock footage
+├── video_assembler.py        # ✂️ MoviePy final assembly
+├── youtube_uploader.py       # 📤 YouTube Data API v3
+├── analytics.py              # 📊 Channel stats
+├── seo.py                    # 🔍 SEO titles, descriptions, tags
+├── content_calendar.py       # 📅 30-day content planner
+├── compliance.py             # ✅ Policy checker + AI disclosure
+│
+├── templates/                # Jinja2 HTML pages (11 pages)
+├── static/css/style.css      # Dark YouTube-style theme
+├── static/js/main.js         # SSE progress + voice bar JS
+│
 ├── outputs/                  # Generated files (gitignored)
-│   ├── scripts/              # Saved script JSON files
-│   ├── audio/                # Generated MP3 voiceovers
-│   ├── thumbnails/           # Generated PNG thumbnails
-│   └── videos/               # Assembled MP4 videos
-└── data/                     # Content calendars and topic banks
+│   ├── audio/                # MP3 voiceovers
+│   ├── thumbnails/           # PNG thumbnails
+│   ├── videos/               # MP4 assembled videos
+│   ├── scripts/              # JSON script files
+│   └── previews/             # Voice preview cache
+└── data/                     # App data (voices.json gitignored)
 ```
 
----
+### Tech Stack
 
-## Quick Start Guide
-
-### One-Click Pipeline
-
-1. Go to the home page (One-Click Pipeline)
-2. Enter a video topic
-3. Select your **Niche** (optimizes script, voice, and thumbnail)
-4. Choose **Quality Tier** — Balanced is recommended
-5. Set duration and privacy
-6. Optionally check "Auto-upload to YouTube"
-7. Click **Generate Video** and watch real-time progress
-
-### Script Writer (with Hook Generator)
-
-1. Go to Script Writer
-2. Enter topic and select niche
-3. Click **Generate 3 Hook Options**
-4. Pick the hook formula that fits best (Shock, Question, or Story)
-5. Select duration and click **Generate Full Script**
-6. Script is humanized automatically and saved to `outputs/scripts/`
-
-### SEO Package
-
-1. Go to SEO & Metadata
-2. Enter topic and niche
-3. Get 5 scored title options, full description, and 20+ tags
-4. Click any title to copy instantly
-
-### Content Calendar
-
-1. Go to Content Calendar
-2. Select niche and posting frequency
-3. Generate a 30-day schedule with topic ideas
-4. Or generate a topic bank of 25-100 video titles
-
-### Compliance Check
-
-1. Go to Compliance & Safety
-2. Paste your script for policy review
-3. Get risk score and specific issues to fix
-4. Copy the AI disclosure for your description
+| Layer | Technology |
+|-------|-----------|
+| Backend | Python 3.12, Flask 3.x |
+| AI Script Generation | Anthropic Claude (claude-sonnet-4-6) |
+| AI Thumbnail | OpenAI DALL-E 3 |
+| Text-to-Speech | ElevenLabs (eleven_multilingual_v2) |
+| Stock Footage | Pexels API |
+| Video Assembly | MoviePy + FFmpeg |
+| YouTube | Google YouTube Data API v3 |
+| Progress Streaming | Server-Sent Events (SSE) |
+| Styling | Custom dark CSS — YouTube red/black theme |
 
 ---
 
-## Important Notes
+## 📋 Requirements
 
-- The `outputs/` and `data/` directories are gitignored — all generated files stay local
-- `token.pickle` and `client_secrets.json` are gitignored for security
-- API keys in `.env` are never committed to git
-- YouTube upload requires `client_secrets.json` from Google Cloud Console
-- MoviePy requires FFmpeg — install it from [ffmpeg.org](https://ffmpeg.org/) and add to PATH
-
-### Installing FFmpeg on Windows
-
-```bash
-winget install ffmpeg
-```
-
-Or download from [ffmpeg.org/download.html](https://ffmpeg.org/download.html) and add the `bin` folder to your system PATH.
+- Python 3.10+
+- FFmpeg (for video assembly) — `winget install ffmpeg` on Windows
+- ElevenLabs Starter plan or above for voice cloning
+- ~$0.50–2.00 per video in API costs (script + thumbnail + voiceover)
 
 ---
 
-## License
+## 🛡️ Security Notes
 
-MIT License — use freely for personal and commercial projects.
+- API keys live in `.env` — never committed to git
+- `data/voices.json` is gitignored (contains your voice preferences)
+- `token.pickle` and `client_secrets.json` are gitignored
+- Voice cloning requires explicit consent confirmation in the UI
+
+---
+
+## 📄 License
+
+MIT — use freely for personal and commercial projects.
+
+---
+
+<div align="center">
+
+Built with ❤️ using Claude AI · ElevenLabs · DALL-E 3 · Pexels
+
+</div>
