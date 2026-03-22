@@ -9,6 +9,15 @@ BASE_DIR = Path(__file__).parent
 OUTPUTS_DIR = BASE_DIR / "outputs"
 OUTPUTS_DIR.mkdir(exist_ok=True)
 
+SCRIPTS_DIR    = OUTPUTS_DIR / "scripts"
+AUDIO_DIR      = OUTPUTS_DIR / "audio"
+THUMBNAILS_DIR = OUTPUTS_DIR / "thumbnails"
+VIDEOS_DIR     = OUTPUTS_DIR / "videos"
+DATA_DIR       = BASE_DIR / "data"
+
+for _d in [SCRIPTS_DIR, AUDIO_DIR, THUMBNAILS_DIR, VIDEOS_DIR, DATA_DIR]:
+    _d.mkdir(parents=True, exist_ok=True)
+
 # API Keys
 ANTHROPIC_API_KEY   = os.getenv("ANTHROPIC_API_KEY", "")
 ELEVENLABS_API_KEY  = os.getenv("ELEVENLABS_API_KEY", "")
