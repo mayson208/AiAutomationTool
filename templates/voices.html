@@ -1,0 +1,333 @@
+{% extends "base.html" %}
+{% block title %}Voice Library{% endblock %}
+{% block content %}
+<div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+  <div>
+    <h1>&#127897; Voice Library</h1>
+    <p class="page-subtitle">Browse, preview, and manage voices for your channels</p>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+    {% if active_voice.voice_id %}
+    <div class="active-voice-pill">
+      <span class="active-dot"></span>
+      <span>Active: <strong>{{ active_voice.voice_name }}</strong></span>
+    </div>
+    {% endif %}
+    <form method="POST" action="/voices/sync" style="margin:0">
+      <button class="btn btn-sm">&#8635; Sync from ElevenLabs</button>
+    </form>
+  </div>
+</div>
+
+{% if last_synced %}
+<p style="font-size:11px;color:var(--text-muted);margin-bottom:16px">Last synced: {{ last_synced[:19].replace('T',' ') }}</p>
+{% endif %}
+
+<!-- Search + Filter Bar -->
+<div class="card" style="padding:16px">
+  <div class="voice-filters">
+    <input type="text" id="voiceSearch" class="form-input" placeholder="&#128269; Search voices..." style="max-width:280px" oninput="filterVoices()">
+    <select id="filterGender" class="form-select" style="max-width:150px" onchange="filterVoices()">
+      <option value="">All Genders</option>
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+    </select>
+    <select id="filterCategory" class="form-select" style="max-width:180px" onchange="filterVoices()">
+      <option value="">All Types</option>
+      <option value="premade">Built-in Voices</option>
+      <option value="cloned">Cloned Voices</option>
+      <option value="professional">Professional</option>
+    </select>
+    <select id="filterNiche" class="form-select" style="max-width:200px" onchange="filterVoices()">
+      <option value="">All Niches</option>
+      <option value="finance">Finance</option>
+      <option value="motivation">Motivation</option>
+      <option value="facts">Facts</option>
+      <option value="truecrime">True Crime</option>
+      <option value="history">History</option>
+      <option value="science">Science</option>
+      <option value="horror">Horror</option>
+      <option value="meditation">Meditation</option>
+    </select>
+    <button class="btn btn-sm" onclick="showOnly('favorites')">&#11088; Favorites ({{ favorites|length }})</button>
+    <button class="btn btn-sm" onclick="showOnly('all')">Show All</button>
+  </div>
+</div>
+
+<!-- Voice Grid -->
+<div class="voice-grid" id="voiceGrid">
+  {% for voice in voices %}
+  <div class="voice-card {% if voice.voice_id == active_voice.voice_id %}is-active{% endif %} {% if voice.voice_id in favorites %}is-favorite{% endif %}"
+       data-id="{{ voice.voice_id }}"
+       data-name="{{ voice.name | lower }}"
+       data-gender="{{ voice.gender | lower }}"
+       data-category="{{ voice.category | lower }}"
+       data-usecase="{{ voice.use_case | lower }}"
+       data-desc="{{ voice.description | lower }}">
+
+    <!-- Voice Header -->
+    <div class="voice-card-header">
+      <div class="voice-avatar">{{ voice.name[0] | upper }}</div>
+      <div class="voice-info">
+        <div class="voice-name">{{ voice.name }}
+          {% if voice.voice_id == active_voice.voice_id %}
+          <span class="active-badge">ACTIVE</span>
+          {% endif %}
+        </div>
+        <div class="voice-meta">
+          {% if voice.gender and voice.gender != 'Unknown' %}<span class="voice-tag">{{ voice.gender }}</span>{% endif %}
+          {% if voice.accent and voice.accent != 'Unknown' %}<span class="voice-tag">{{ voice.accent }}</span>{% endif %}
+          {% if voice.age %}<span class="voice-tag">{{ voice.age }}</span>{% endif %}
+          {% if voice.category == 'cloned' %}<span class="voice-tag cloned-tag">Cloned</span>{% endif %}
+        </div>
+      </div>
+      <button class="fav-btn {% if voice.voice_id in favorites %}faved{% endif %}"
+              onclick="toggleFav('{{ voice.voice_id }}', this)" title="Favorite">&#11088;</button>
+    </div>
+
+    <!-- Use Case -->
+    {% if voice.use_case %}
+    <div class="voice-usecase">{{ voice.use_case }}</div>
+    {% elif voice.description %}
+    <div class="voice-usecase">{{ voice.description[:80] }}{% if voice.description|length > 80 %}...{% endif %}</div>
+    {% endif %}
+
+    <!-- Preview Controls -->
+    <div class="voice-preview-row">
+      <select class="form-select niche-select" id="niche_{{ voice.voice_id }}" style="font-size:11px;padding:4px 8px">
+        <option value="general">General</option>
+        <option value="finance">Finance</option>
+        <option value="truecrime">True Crime</option>
+        <option value="facts">Facts</option>
+        <option value="motivation">Motivation</option>
+        <option value="history">History</option>
+        <option value="science">Science</option>
+        <option value="horror">Horror</option>
+        <option value="meditation">Meditation</option>
+      </select>
+      <button class="btn btn-sm preview-btn" onclick="previewVoice('{{ voice.voice_id }}', this)" title="Preview voice">
+        &#9654; Preview
+      </button>
+    </div>
+
+    <!-- Audio Player (hidden until preview generated) -->
+    <audio id="audio_{{ voice.voice_id }}" class="voice-audio" preload="none" style="display:none"></audio>
+    <div class="waveform-bar" id="wave_{{ voice.voice_id }}" style="display:none">
+      <div class="wave-anim"><span></span><span></span><span></span><span></span><span></span></div>
+      <span class="wave-label">Playing...</span>
+    </div>
+
+    <!-- Actions -->
+    <div class="voice-actions">
+      <form method="POST" action="/voices/set-active" style="margin:0;flex:1">
+        <input type="hidden" name="voice_id" value="{{ voice.voice_id }}">
+        <input type="hidden" name="voice_name" value="{{ voice.name }}">
+        <button class="btn {% if voice.voice_id == active_voice.voice_id %}btn-active{% else %}btn-primary{% endif %}" style="width:100%">
+          {% if voice.voice_id == active_voice.voice_id %}&#10003; Active{% else %}Select Voice{% endif %}
+        </button>
+      </form>
+      {% if voice.category == 'cloned' %}
+      <form method="POST" action="/voices/delete" style="margin:0"
+            onsubmit="return confirm('Delete this cloned voice? This cannot be undone.')">
+        <input type="hidden" name="voice_id" value="{{ voice.voice_id }}">
+        <button class="btn btn-sm" style="color:#ff4444;border-color:#ff4444">&#128465;</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+
+  {% if not voices %}
+  <div class="card" style="grid-column:1/-1;text-align:center;padding:40px">
+    <p style="color:var(--text-muted)">No voices loaded. Click "Sync from ElevenLabs" to fetch voices.</p>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Voice Clone Section -->
+<div class="card" style="margin-top:24px">
+  <h3>&#127775; Clone a Custom Voice</h3>
+  <p class="form-note">Upload audio samples to create a custom AI voice clone. Requires ElevenLabs Creator plan or higher.</p>
+
+  <div class="clone-consent-box" id="cloneConsent">
+    <p><strong>&#9888; Consent Required</strong></p>
+    <p style="font-size:13px;color:var(--text-muted);margin:8px 0">By proceeding you confirm that you have explicit written permission from the person whose voice is being cloned. Cloning someone's voice without consent violates ElevenLabs Terms of Service and may be illegal in your jurisdiction.</p>
+    <label class="checkbox-label" style="margin:12px 0">
+      <input type="checkbox" id="consentCheck" onchange="toggleCloneForm()">
+      <span>I confirm I have explicit permission to clone this voice</span>
+    </label>
+  </div>
+
+  <div id="cloneForm" style="display:none;margin-top:16px">
+    <form method="POST" action="/voices/clone" enctype="multipart/form-data">
+      <div class="form-row">
+        <div class="form-group" style="flex:1">
+          <label>Voice Name</label>
+          <input type="text" name="voice_name" class="form-input" placeholder="e.g. Jerry, Deep Voice Guy" required>
+        </div>
+        <div class="form-group" style="flex:2">
+          <label>Description (optional)</label>
+          <input type="text" name="description" class="form-input" placeholder="e.g. Warm, friendly male voice with American accent">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Audio Samples (MP3 or WAV)</label>
+        <div class="upload-zone" onclick="document.getElementById('audioFiles').click()">
+          <p>&#127897; Click to upload or drag and drop</p>
+          <p style="font-size:11px;color:var(--text-muted)">Minimum 1 minute · Best quality with 3-5 minutes · Clear audio, no background noise</p>
+          <input type="file" id="audioFiles" name="audio_files" accept=".mp3,.wav,.m4a" multiple style="display:none" onchange="showFileNames(this)">
+          <div id="fileNames" style="margin-top:8px;font-size:12px;color:var(--text-muted)"></div>
+        </div>
+      </div>
+      <button class="btn btn-primary">&#127775; Create Voice Clone</button>
+    </form>
+  </div>
+</div>
+
+<!-- Usage Stats -->
+{% if usage_stats %}
+<div class="card" style="margin-top:16px">
+  <h3>&#128202; Voice Usage Stats</h3>
+  <table class="data-table">
+    <thead><tr><th>Voice</th><th>Videos Generated</th><th>Total Characters</th><th>Last Used</th></tr></thead>
+    <tbody>
+      {% for vid, stats in usage_stats.items() %}
+      {% set vname = voices | selectattr('voice_id', 'equalto', vid) | map(attribute='name') | first | default(vid[:12] + '...') %}
+      <tr>
+        <td><strong>{{ vname }}</strong></td>
+        <td>{{ stats.count }}</td>
+        <td>{{ "{:,}".format(stats.total_chars) }}</td>
+        <td>{{ stats.last_used[:10] if stats.last_used else '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<style>
+.voice-filters { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+.voice-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; margin-top:16px; }
+.voice-card { background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:16px; display:flex; flex-direction:column; gap:10px; transition:border-color .2s; }
+.voice-card:hover { border-color:#555; }
+.voice-card.is-active { border-color:var(--red); background:rgba(255,0,0,.04); }
+.voice-card.is-favorite .fav-btn { color:#ffd700; }
+.voice-card-header { display:flex; align-items:flex-start; gap:10px; }
+.voice-avatar { width:40px; height:40px; border-radius:50%; background:var(--bg3); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:700; color:var(--red); flex-shrink:0; }
+.voice-info { flex:1; min-width:0; }
+.voice-name { font-size:14px; font-weight:600; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.voice-meta { display:flex; flex-wrap:wrap; gap:4px; margin-top:4px; }
+.voice-tag { background:var(--bg3); border:1px solid var(--border); border-radius:10px; padding:1px 8px; font-size:10px; color:var(--text-muted); }
+.cloned-tag { background:rgba(255,165,0,.15); color:#ffa500; border-color:#ffa500; }
+.active-badge { background:var(--red); color:#fff; border-radius:4px; padding:1px 6px; font-size:9px; font-weight:700; letter-spacing:1px; }
+.fav-btn { background:none; border:none; cursor:pointer; font-size:16px; color:var(--text-muted); padding:2px; transition:color .2s; flex-shrink:0; }
+.fav-btn:hover, .fav-btn.faved { color:#ffd700; }
+.voice-usecase { font-size:12px; color:var(--text-muted); line-height:1.4; }
+.voice-preview-row { display:flex; gap:8px; align-items:center; }
+.voice-audio { width:100%; height:32px; }
+.waveform-bar { display:flex; align-items:center; gap:10px; padding:8px; background:var(--bg3); border-radius:6px; }
+.wave-anim { display:flex; align-items:center; gap:3px; height:20px; }
+.wave-anim span { display:block; width:3px; background:var(--red); border-radius:2px; animation:wave .8s ease-in-out infinite; }
+.wave-anim span:nth-child(2) { animation-delay:.1s; }
+.wave-anim span:nth-child(3) { animation-delay:.2s; }
+.wave-anim span:nth-child(4) { animation-delay:.3s; }
+.wave-anim span:nth-child(5) { animation-delay:.4s; }
+@keyframes wave { 0%,100%{height:4px} 50%{height:18px} }
+.wave-label { font-size:11px; color:var(--text-muted); }
+.voice-actions { display:flex; gap:8px; margin-top:4px; }
+.btn-active { background:rgba(0,200,80,.15); color:#00c850; border:1px solid rgba(0,200,80,.3); width:100%; }
+.active-voice-pill { display:flex; align-items:center; gap:8px; background:var(--bg2); border:1px solid var(--border); border-radius:20px; padding:6px 14px; font-size:13px; }
+.active-dot { width:8px; height:8px; background:#00c850; border-radius:50%; flex-shrink:0; }
+.clone-consent-box { background:rgba(255,165,0,.06); border:1px solid rgba(255,165,0,.25); border-radius:8px; padding:16px; }
+.upload-zone { border:2px dashed var(--border); border-radius:8px; padding:24px; text-align:center; cursor:pointer; transition:border-color .2s; }
+.upload-zone:hover { border-color:var(--red); }
+</style>
+<script>
+function filterVoices() {
+  const search = document.getElementById('voiceSearch').value.toLowerCase();
+  const gender = document.getElementById('filterGender').value.toLowerCase();
+  const category = document.getElementById('filterCategory').value.toLowerCase();
+  const niche = document.getElementById('filterNiche').value.toLowerCase();
+  document.querySelectorAll('.voice-card').forEach(card => {
+    const matchSearch = !search || card.dataset.name.includes(search) || card.dataset.desc.includes(search) || card.dataset.usecase.includes(search);
+    const matchGender = !gender || card.dataset.gender.includes(gender);
+    const matchCat = !category || card.dataset.category === category;
+    const matchNiche = !niche || card.dataset.usecase.includes(niche) || card.dataset.desc.includes(niche);
+    card.style.display = (matchSearch && matchGender && matchCat && matchNiche) ? '' : 'none';
+  });
+}
+
+function showOnly(type) {
+  document.querySelectorAll('.voice-card').forEach(card => {
+    if (type === 'favorites') {
+      card.style.display = card.classList.contains('is-favorite') ? '' : 'none';
+    } else {
+      card.style.display = '';
+    }
+  });
+}
+
+function toggleFav(voiceId, btn) {
+  fetch('/voices/favorite', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({voice_id: voiceId})
+  })
+  .then(r => r.json())
+  .then(data => {
+    const card = btn.closest('.voice-card');
+    if (data.is_favorite) {
+      btn.classList.add('faved');
+      card.classList.add('is-favorite');
+    } else {
+      btn.classList.remove('faved');
+      card.classList.remove('is-favorite');
+    }
+  });
+}
+
+function previewVoice(voiceId, btn) {
+  const niche = document.getElementById('niche_' + voiceId).value;
+  const audio = document.getElementById('audio_' + voiceId);
+  const wave = document.getElementById('wave_' + voiceId);
+
+  btn.textContent = '\u23F3 Generating...';
+  btn.disabled = true;
+  wave.style.display = 'flex';
+
+  fetch('/voices/preview', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({voice_id: voiceId, niche: niche})
+  })
+  .then(r => r.json())
+  .then(data => {
+    btn.textContent = '\u25B6 Preview';
+    btn.disabled = false;
+    if (data.success) {
+      audio.src = '/outputs/previews/' + data.filename + '?t=' + Date.now();
+      audio.style.display = 'block';
+      audio.play();
+      audio.onended = () => { wave.style.display = 'none'; };
+    } else {
+      wave.style.display = 'none';
+      alert('Preview failed: ' + data.error);
+    }
+  })
+  .catch(() => { btn.textContent = '\u25B6 Preview'; btn.disabled = false; wave.style.display = 'none'; });
+}
+
+function toggleCloneForm() {
+  const checked = document.getElementById('consentCheck').checked;
+  document.getElementById('cloneForm').style.display = checked ? 'block' : 'none';
+}
+
+function showFileNames(input) {
+  const names = Array.from(input.files).map(f => f.name).join(', ');
+  document.getElementById('fileNames').textContent = names || '';
+}
+</script>
+{% endblock %}
