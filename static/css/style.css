@@ -143,3 +143,43 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 
 /* Pipeline card */
 .pipeline-card { border: 1px solid var(--border); }
+
+/* ── API Key Status ─────────────────────────────────────────────────────────── */
+.key-status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.key-status-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.9rem;
+  background: var(--bg2);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.status-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.status-badge.set   { background: #1a3a1a; color: #4caf50; }
+.status-badge.missing { background: #3a1a1a; color: #f44336; }
+.status-badge.small { font-size: 0.65rem; padding: 0.1rem 0.4rem; margin-left: 0.4rem; }
+.key-label  { font-size: 0.85rem; color: var(--text); font-weight: 500; }
+.key-note   { font-size: 0.75rem; color: var(--text-muted); margin-left: auto; }
+.form-note  { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.25rem; }
+.form-input.has-value { border-color: #2a4a2a; }
+
+/* ── Missing key warning banner ─────────────────────────────────────────────── */
+.alert-warning {
+  background: #2a2400;
+  border-left: 4px solid #ffc107;
+  color: #ffd54f;
+}
+.alert-warning a { color: #ffd54f; text-decoration: underline; }
+.key-warning { margin-bottom: 1rem; }

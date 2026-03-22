@@ -1,10 +1,13 @@
 """app.py — STUDIO Flask application entry point."""
 import os
 import json
+import uuid
+import queue
+import threading
 from pathlib import Path
 from flask import (
     Flask, render_template, request, redirect, url_for,
-    flash, send_from_directory, jsonify, session
+    flash, send_from_directory, jsonify, session, Response, stream_with_context
 )
 from dotenv import load_dotenv, set_key
 
@@ -17,15 +20,41 @@ app.secret_key = config.FLASK_SECRET_KEY
 # Ensure outputs dir exists
 config.OUTPUTS_DIR.mkdir(exist_ok=True)
 
+# ── Job store for SSE progress ─────────────────────────────────────────────────
+_jobs: dict = {}  # job_id -> {"queue": Queue, "result": dict|None, "done": bool}
+_jobs_lock = threading.Lock()
+
+
+def _get_job(job_id):
+    with _jobs_lock:
+        return _jobs.get(job_id)
+
+
+def _create_job(job_id):
+    with _jobs_lock:
+        _jobs[job_id] = {"queue": queue.Queue(), "result": None, "done": False}
+    return _jobs[job_id]
+
+
 # ── Serve output files ────────────────────────────────────────────────────────
 @app.route("/outputs/<path:filename>")
 def serve_output(filename):
     return send_from_directory(config.OUTPUTS_DIR, filename)
 
+
 # ── Index / Pipeline ─────────────────────────────────────────────────────────
 @app.route("/")
 def index():
-    return render_template("index.html", active="pipeline", result=session.pop("pipeline_result", None))
+    missing = config.missing_keys()
+    job_id = request.args.get("job")
+    return render_template(
+        "index.html",
+        active="pipeline",
+        result=session.pop("pipeline_result", None),
+        missing=missing,
+        job_id=job_id,
+    )
+
 
 @app.route("/pipeline/run", methods=["POST"])
 def run_pipeline():
@@ -44,18 +73,67 @@ def run_pipeline():
         flash(f"Missing API keys: {', '.join(missing)}. Go to Settings.", "error")
         return redirect(url_for("index"))
 
-    result = pipe.run_pipeline(topic, duration_minutes=duration, upload=upload, privacy=privacy)
-    session["pipeline_result"] = result
-    if result.get("success"):
-        flash(f"Pipeline complete! Video ready: {result.get('title', topic)}", "success")
-    else:
-        flash(f"Pipeline error: {result.get('error', 'Unknown error')}", "error")
-    return redirect(url_for("index"))
+    job_id = str(uuid.uuid4())
+    job = _create_job(job_id)
+    q = job["queue"]
+
+    def run():
+        def progress(step, total, msg):
+            q.put({"step": step, "total": total, "msg": msg})
+
+        result = pipe.run_pipeline(
+            topic,
+            duration_minutes=duration,
+            upload=upload,
+            privacy=privacy,
+            progress_callback=progress,
+        )
+        with _jobs_lock:
+            _jobs[job_id]["result"] = result
+            _jobs[job_id]["done"] = True
+        q.put(None)  # sentinel — signals completion
+
+    threading.Thread(target=run, daemon=True).start()
+    return redirect(url_for("index", job=job_id))
+
+
+@app.route("/pipeline/progress/<job_id>")
+def pipeline_progress(job_id):
+    job = _get_job(job_id)
+
+    def generate():
+        if not job:
+            yield 'data: {"error": "Job not found"}\n\n'
+            return
+        q = job["queue"]
+        while True:
+            try:
+                item = q.get(timeout=60)
+            except queue.Empty:
+                yield 'data: {"ping": true}\n\n'
+                continue
+            if item is None:
+                result = job.get("result", {})
+                yield f"data: {json.dumps({'done': True, 'success': result.get('success', False), 'title': result.get('title', ''), 'error': result.get('error', '')})}\n\n"
+                break
+            yield f"data: {json.dumps(item)}\n\n"
+
+    return Response(
+        stream_with_context(generate()),
+        mimetype="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+            "Connection": "keep-alive",
+        },
+    )
+
 
 # ── Script Writer ─────────────────────────────────────────────────────────────
 @app.route("/script")
 def script_page():
     return render_template("script.html", active="script", result=session.pop("script_result", None))
+
 
 @app.route("/script/generate", methods=["POST"])
 def generate_script():
@@ -73,6 +151,7 @@ def generate_script():
         flash(f"Error: {result['error']}", "error")
     return redirect(url_for("script_page"))
 
+
 @app.route("/script/download")
 def download_script():
     from flask import Response
@@ -80,10 +159,12 @@ def download_script():
     return Response(script, mimetype="text/plain",
                     headers={"Content-Disposition": "attachment; filename=script.txt"})
 
+
 # ── Voiceover ─────────────────────────────────────────────────────────────────
 @app.route("/voiceover")
 def voiceover_page():
     return render_template("voiceover.html", active="voiceover", result=session.pop("voiceover_result", None))
+
 
 @app.route("/voiceover/generate", methods=["POST"])
 def generate_voiceover():
@@ -100,10 +181,12 @@ def generate_voiceover():
         flash(f"Error: {result['error']}", "error")
     return redirect(url_for("voiceover_page"))
 
+
 # ── Thumbnail ─────────────────────────────────────────────────────────────────
 @app.route("/thumbnail")
 def thumbnail_page():
     return render_template("thumbnail.html", active="thumbnail", result=session.pop("thumbnail_result", None))
+
 
 @app.route("/thumbnail/generate", methods=["POST"])
 def generate_thumbnail():
@@ -121,11 +204,13 @@ def generate_thumbnail():
         flash(f"Error: {result['error']}", "error")
     return redirect(url_for("thumbnail_page"))
 
+
 # ── Stock Footage ─────────────────────────────────────────────────────────────
 @app.route("/footage")
 def footage_page():
     return render_template("footage.html", active="footage",
                            videos=session.pop("footage_results", None))
+
 
 @app.route("/footage/search", methods=["POST"])
 def search_footage():
@@ -142,6 +227,7 @@ def search_footage():
         flash(f"Error: {result['error']}", "error")
     return redirect(url_for("footage_page"))
 
+
 @app.route("/footage/download")
 def download_footage():
     import footage as ft
@@ -156,6 +242,7 @@ def download_footage():
         flash(f"Error: {result['error']}", "error")
     return redirect(url_for("footage_page"))
 
+
 # ── Analytics ─────────────────────────────────────────────────────────────────
 @app.route("/analytics")
 def analytics_page():
@@ -164,6 +251,7 @@ def analytics_page():
     videos = analytics.get_recent_videos() if stats.get("success") else None
     return render_template("analytics.html", active="analytics", stats=stats, videos=videos)
 
+
 # ── History ───────────────────────────────────────────────────────────────────
 @app.route("/history")
 def history_page():
@@ -171,25 +259,29 @@ def history_page():
     history = pipe._load_history()
     return render_template("history.html", active="history", history=history)
 
+
 # ── Settings ──────────────────────────────────────────────────────────────────
 @app.route("/settings")
 def settings_page():
     current = {
-        "ANTHROPIC_API_KEY": config.ANTHROPIC_API_KEY,
-        "ELEVENLABS_API_KEY": config.ELEVENLABS_API_KEY,
+        "ANTHROPIC_API_KEY":   config.ANTHROPIC_API_KEY,
+        "ELEVENLABS_API_KEY":  config.ELEVENLABS_API_KEY,
         "ELEVENLABS_VOICE_ID": config.ELEVENLABS_VOICE_ID,
-        "OPENAI_API_KEY": config.OPENAI_API_KEY,
-        "PEXELS_API_KEY": config.PEXELS_API_KEY,
-        "YOUTUBE_CLIENT_ID": config.YOUTUBE_CLIENT_ID,
+        "OPENAI_API_KEY":      config.OPENAI_API_KEY,
+        "PEXELS_API_KEY":      config.PEXELS_API_KEY,
+        "YOUTUBE_CLIENT_ID":   config.YOUTUBE_CLIENT_ID,
         "YOUTUBE_CLIENT_SECRET": config.YOUTUBE_CLIENT_SECRET,
     }
     return render_template("settings.html", active="settings", current=current)
 
+
 @app.route("/settings/save", methods=["POST"])
 def save_settings():
     env_path = config.BASE_DIR / ".env"
-    keys = ["ANTHROPIC_API_KEY","ELEVENLABS_API_KEY","ELEVENLABS_VOICE_ID",
-            "OPENAI_API_KEY","PEXELS_API_KEY","YOUTUBE_CLIENT_ID","YOUTUBE_CLIENT_SECRET"]
+    keys = [
+        "ANTHROPIC_API_KEY", "ELEVENLABS_API_KEY", "ELEVENLABS_VOICE_ID",
+        "OPENAI_API_KEY", "PEXELS_API_KEY", "YOUTUBE_CLIENT_ID", "YOUTUBE_CLIENT_SECRET",
+    ]
     for key in keys:
         val = request.form.get(key, "").strip()
         if val:
@@ -197,6 +289,7 @@ def save_settings():
     load_dotenv(override=True)
     flash("Settings saved. Restart the app for changes to take effect.", "success")
     return redirect(url_for("settings_page"))
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
