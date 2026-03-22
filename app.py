@@ -281,6 +281,36 @@ def download_footage():
     return redirect(url_for("footage_page"))
 
 
+# ── Compliance ────────────────────────────────────────────────────────────────
+@app.route("/compliance")
+def compliance_page():
+    import compliance
+    return render_template("compliance.html", active="compliance",
+                           check_result=session.pop("compliance_result", None),
+                           music_result=session.pop("music_result", None),
+                           disclosure=compliance.get_ai_disclosure("description"),
+                           prefill_script=session.get("last_script", ""))
+
+@app.route("/compliance/check", methods=["POST"])
+def check_compliance():
+    import compliance
+    script = request.form.get("script", "").strip()
+    if not script:
+        flash("Paste a script to check.", "error")
+        return redirect(url_for("compliance_page"))
+    result = compliance.check_script_policy(script)
+    session["compliance_result"] = result
+    return redirect(url_for("compliance_page"))
+
+@app.route("/compliance/music", methods=["POST"])
+def check_music():
+    import compliance
+    source = request.form.get("music_source", "").strip()
+    if source:
+        session["music_result"] = compliance.check_music_license(source)
+    return redirect(url_for("compliance_page"))
+
+
 # ── Content Calendar ──────────────────────────────────────────────────────────
 @app.route("/calendar")
 def calendar_page():

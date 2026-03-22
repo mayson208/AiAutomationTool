@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block title %}Compliance{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>&#9989; Compliance & Safety</h1>
+  <p class="page-subtitle">Check scripts for policy violations, get AI disclosures, verify music licenses</p>
+</div>
+
+<div class="two-col">
+  <div class="card">
+    <h3>Script Policy Check</h3>
+    <form method="POST" action="/compliance/check">
+      <div class="form-group">
+        <label>Script to Check</label>
+        <textarea name="script" class="form-textarea" rows="10"
+                  placeholder="Paste your script here...">{% if prefill_script %}{{ prefill_script }}{% endif %}</textarea>
+      </div>
+      <button class="btn btn-primary">&#128270; Check for Policy Issues</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h3>AI Disclosure Generator</h3>
+    <p class="form-note">YouTube requires disclosure when AI is used to realistically depict people or events.</p>
+    <div class="disclosure-box">
+      <label>Standard Disclosure (add to all video descriptions):</label>
+      <textarea class="form-textarea" rows="4" id="disclosureText" readonly>{{ disclosure }}</textarea>
+      <button class="btn btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('disclosureText').value)" style="margin-top:8px">Copy Disclosure</button>
+    </div>
+
+    <div style="margin-top:20px">
+      <h4>Music License Checker</h4>
+      <form method="POST" action="/compliance/music">
+        <div class="form-row">
+          <div class="form-group" style="flex:2">
+            <label>Music Source</label>
+            <input type="text" name="music_source" class="form-input" placeholder="e.g. YouTube Audio Library, Epidemic Sound">
+          </div>
+          <div class="form-group" style="display:flex;align-items:flex-end">
+            <button class="btn btn-primary">Check</button>
+          </div>
+        </div>
+      </form>
+      {% if music_result %}
+      <div class="alert alert-{{ 'success' if music_result.status == 'safe' else 'warning' }}" style="margin-top:12px">
+        <strong>{{ music_result.source }}:</strong> {{ music_result.notes }}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% if check_result %}
+<div class="card">
+  <h3>Policy Check Results</h3>
+  <div class="risk-meter">
+    <div class="risk-score alert-{{ check_result.risk_color }}">
+      Risk Score: <strong>{{ check_result.risk_score }}/100</strong> — {{ check_result.risk_level }} Risk
+    </div>
+  </div>
+
+  {% if check_result.issues %}
+  <div style="margin-top:16px">
+    <h4 style="color:#ff4444;margin-bottom:8px">&#10007; Issues (Fix Before Publishing)</h4>
+    {% for issue in check_result.issues %}
+    <div class="alert alert-error" style="margin-bottom:6px">{{ issue }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if check_result.warnings %}
+  <div style="margin-top:16px">
+    <h4 style="color:#ffa500;margin-bottom:8px">&#9888; Warnings (Review Carefully)</h4>
+    {% for warning in check_result.warnings %}
+    <div class="alert alert-warning" style="margin-bottom:6px">{{ warning }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if not check_result.issues and not check_result.warnings %}
+  <div class="alert alert-success">&#10003; No policy issues detected. Script looks clean!</div>
+  {% endif %}
+
+  <div style="margin-top:16px">
+    <h4>Required: Add This to Your Description</h4>
+    <div class="disclosure-box">
+      <textarea class="form-textarea" rows="3" readonly>{{ check_result.disclosure_text }}</textarea>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Safe Content Guidelines -->
+<div class="card">
+  <h3>&#128218; YouTube Safe Content Guidelines</h3>
+  <div class="guidelines-grid">
+    <div class="guideline-item safe">
+      <h4>&#10003; Always Safe</h4>
+      <ul>
+        <li>Educational content with factual accuracy</li>
+        <li>Entertainment without harmful stereotypes</li>
+        <li>Music from royalty-free sources (YouTube Audio Library, Epidemic Sound)</li>
+        <li>Stock footage from Pexels, Pixabay, Storyblocks</li>
+        <li>AI-generated content with proper disclosure</li>
+      </ul>
+    </div>
+    <div class="guideline-item warning">
+      <h4>&#9888; Review Carefully</h4>
+      <ul>
+        <li>True crime — focus on facts, avoid glorifying violence</li>
+        <li>News — maintain accuracy, avoid misinformation</li>
+        <li>Finance — don't give specific investment advice</li>
+        <li>Health — include disclaimer, not medical advice</li>
+        <li>Controversial topics — balanced perspective required</li>
+      </ul>
+    </div>
+    <div class="guideline-item danger">
+      <h4>&#10007; Avoid Completely</h4>
+      <ul>
+        <li>Copyrighted music without license</li>
+        <li>Misleading thumbnails/titles (clickbait violations)</li>
+        <li>Hateful or discriminatory content</li>
+        <li>Graphic violence or disturbing imagery</li>
+        <li>Bulk AI content with no original value</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.disclosure-box label { display:block; font-size:12px; color:var(--text-muted); margin-bottom:8px; }
+.guidelines-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.guideline-item { padding:16px; border-radius:8px; }
+.guideline-item.safe { background:rgba(0,200,80,.05); border:1px solid rgba(0,200,80,.2); }
+.guideline-item.warning { background:rgba(255,165,0,.05); border:1px solid rgba(255,165,0,.2); }
+.guideline-item.danger { background:rgba(255,0,0,.05); border:1px solid rgba(255,0,0,.2); }
+.guideline-item h4 { margin-bottom:10px; font-size:13px; }
+.guideline-item ul { padding-left:16px; }
+.guideline-item li { font-size:12px; color:var(--text-muted); margin-bottom:4px; line-height:1.5; }
+.risk-meter { margin-bottom:12px; }
+.risk-score { padding:12px 16px; border-radius:6px; font-size:14px; }
+@media(max-width:800px) { .guidelines-grid { grid-template-columns:1fr; } }
+</style>
+{% endblock %}
