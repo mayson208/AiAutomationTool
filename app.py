@@ -39,6 +39,11 @@ def _create_job(job_id):
 # ── Serve output files ────────────────────────────────────────────────────────
 @app.route("/outputs/<path:filename>")
 def serve_output(filename):
+    # Try subdirectories first
+    for subdir in ["audio", "scripts", "thumbnails", "videos"]:
+        subpath = config.OUTPUTS_DIR / subdir / filename
+        if subpath.exists():
+            return send_from_directory(config.OUTPUTS_DIR / subdir, filename)
     return send_from_directory(config.OUTPUTS_DIR, filename)
 
 
@@ -190,17 +195,21 @@ def download_script():
 # ── Voiceover ─────────────────────────────────────────────────────────────────
 @app.route("/voiceover")
 def voiceover_page():
-    return render_template("voiceover.html", active="voiceover", result=session.pop("voiceover_result", None))
+    prefill_script = session.get("last_script", "")
+    return render_template("voiceover.html", active="voiceover",
+                           result=session.pop("voiceover_result", None),
+                           prefill_script=prefill_script)
 
 
 @app.route("/voiceover/generate", methods=["POST"])
 def generate_voiceover():
     import voiceover as vo
     script_text = request.form.get("script", "").strip()
+    niche = request.form.get("niche", "facts")
     if not script_text:
         flash("Paste a script to generate voiceover.", "error")
         return redirect(url_for("voiceover_page"))
-    result = vo.generate_voiceover(script_text)
+    result = vo.generate_voiceover(script_text, niche=niche)
     if result["success"]:
         session["voiceover_result"] = result
         flash("Voiceover generated!", "success")
