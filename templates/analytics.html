@@ -44,4 +44,54 @@
   <p>&#9888; Connect your YouTube account to see analytics. Go to <a href="/settings">Settings</a>.</p>
 </div>
 {% endif %}
+
+<!-- CPM Reference Table -->
+<div class="card">
+  <h3>&#128181; Monetization Reference</h3>
+  <div class="monetization-grid">
+    <div class="mon-item">
+      <div class="mon-label">YPP Requirement</div>
+      <div class="mon-value">1,000 subs</div>
+      <div class="mon-sub">+ 4,000 watch hours (or 10M Shorts views)</div>
+    </div>
+    <div class="mon-item">
+      <div class="mon-label">Avg Time to Monetize</div>
+      <div class="mon-value">4-8 months</div>
+      <div class="mon-sub">posting 3-5x/week with AI automation</div>
+    </div>
+    <div class="mon-item">
+      <div class="mon-label">Best CPM Niche</div>
+      <div class="mon-value" style="color:#00c850">Finance</div>
+      <div class="mon-sub">$15-50 CPM</div>
+    </div>
+  </div>
+  <table class="data-table" style="margin-top:16px">
+    <thead><tr><th>Niche</th><th>CPM</th><th>RPM (after YouTube cut)</th><th>Competition</th></tr></thead>
+    <tbody>
+      <tr><td>Finance & Investing</td><td style="color:#00c850">$15–50</td><td>$8–27</td><td>High</td></tr>
+      <tr><td>Tech & Business</td><td style="color:#00c850">$12–25</td><td>$7–14</td><td>High</td></tr>
+      <tr><td>Health & Wellness</td><td>$8–20</td><td>$4–11</td><td>Medium</td></tr>
+      <tr><td>Science & Space</td><td>$6–12</td><td>$3–7</td><td>Medium</td></tr>
+      <tr><td>Self Improvement</td><td>$5–10</td><td>$3–6</td><td>Medium-High</td></tr>
+      <tr><td>History</td><td>$5–10</td><td>$3–6</td><td>Medium</td></tr>
+      <tr><td>True Crime</td><td>$4–9</td><td>$2–5</td><td>High</td></tr>
+      <tr><td>Facts / Did You Know</td><td>$4–10</td><td>$2–6</td><td>High</td></tr>
+      <tr><td>Motivational & Quotes</td><td>$5–10</td><td>$3–6</td><td>Very High</td></tr>
+      <tr><td>Top 10 Lists</td><td>$4–8</td><td>$2–5</td><td>Very High</td></tr>
+      <tr><td>Horror & Scary Stories</td><td>$3–7</td><td>$2–4</td><td>Medium</td></tr>
+      <tr><td>News Summary</td><td>$4–8</td><td>$2–5</td><td>High</td></tr>
+      <tr><td>Meditation & Sleep</td><td>$3–6</td><td>$2–3</td><td>Medium</td></tr>
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.monetization-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:16px; }
+.mon-item { background:var(--bg3); border:1px solid var(--border); border-radius:8px; padding:16px; text-align:center; }
+.mon-label { font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; }
+.mon-value { font-size:24px; font-weight:700; margin:6px 0; }
+.mon-sub { font-size:11px; color:var(--text-muted); }
+</style>
 {% endblock %}
