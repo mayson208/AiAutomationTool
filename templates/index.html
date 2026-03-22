@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}One-Click Pipeline{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>&#9889; One-Click Pipeline</h1>
+  <p class="page-subtitle">Type a topic. Click generate. Get a fully produced YouTube video.</p>
+</div>
+
+<div class="card pipeline-card">
+  <form id="pipelineForm" action="/pipeline/run" method="POST">
+    <div class="form-group">
+      <label for="topic">Video Topic</label>
+      <input type="text" id="topic" name="topic" class="form-input"
+             placeholder="e.g. 10 Productivity Habits That Changed My Life"
+             required autofocus>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="duration">Duration (minutes)</label>
+        <select id="duration" name="duration" class="form-select">
+          <option value="5">5 minutes</option>
+          <option value="8" selected>8 minutes</option>
+          <option value="10">10 minutes</option>
+          <option value="15">15 minutes</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="privacy">Upload Privacy</label>
+        <select id="privacy" name="privacy" class="form-select">
+          <option value="private" selected>Private</option>
+          <option value="unlisted">Unlisted</option>
+          <option value="public">Public</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group checkbox-group">
+      <label class="checkbox-label">
+        <input type="checkbox" name="upload" value="1" id="uploadCheck">
+        <span>Auto-upload to YouTube when done</span>
+      </label>
+    </div>
+    <button type="submit" class="btn btn-primary btn-lg" id="runBtn">
+      &#9889; Generate Video
+    </button>
+  </form>
+</div>
+
+<!-- Progress -->
+<div class="card" id="progressCard" style="display:none">
+  <h3>Pipeline Progress</h3>
+  <div class="progress-steps">
+    <div class="step" id="step1"><span class="step-icon">&#128221;</span> Script</div>
+    <div class="step" id="step2"><span class="step-icon">&#127897;</span> Voiceover</div>
+    <div class="step" id="step3"><span class="step-icon">&#128444;</span> Thumbnail</div>
+    <div class="step" id="step4"><span class="step-icon">&#127916;</span> Footage</div>
+    <div class="step" id="step5"><span class="step-icon">&#127909;</span> Assemble</div>
+    <div class="step" id="step6"><span class="step-icon">&#9654;</span> Upload</div>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar" id="progressBar" style="width:0%"></div>
+  </div>
+  <p class="progress-msg" id="progressMsg">Starting pipeline...</p>
+</div>
+
+<!-- Result -->
+{% if result %}
+<div class="card result-card">
+  <h3>&#10003; Pipeline Complete</h3>
+  <div class="result-grid">
+    {% if result.thumbnail_path %}
+    <div class="result-item">
+      <label>Thumbnail</label>
+      <img src="/outputs/{{ result.thumbnail_path.split('\\')[-1] }}" class="result-thumb">
+    </div>
+    {% endif %}
+    <div class="result-item">
+      <label>Title</label>
+      <p>{{ result.title }}</p>
+    </div>
+    {% if result.youtube_url %}
+    <div class="result-item">
+      <label>YouTube URL</label>
+      <a href="{{ result.youtube_url }}" target="_blank" class="btn btn-sm">&#9654; View on YouTube</a>
+    </div>
+    {% endif %}
+    {% if result.script %}
+    <div class="result-item full-width">
+      <label>Script Preview</label>
+      <pre class="script-preview">{{ result.script[:500] }}...</pre>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('pipelineForm').addEventListener('submit', function() {
+  document.getElementById('progressCard').style.display = 'block';
+  document.getElementById('runBtn').disabled = true;
+  document.getElementById('runBtn').textContent = 'Running...';
+});
+</script>
+{% endblock %}

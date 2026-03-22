@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}STUDIO{% endblock %} — AI YouTube Automation</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="sidebar-brand">
+        <span class="brand-icon">&#9654;</span>
+        <span class="brand-name">STUDIO</span>
+      </div>
+      <ul class="sidebar-nav">
+        <li><a href="{{ url_for('index') }}" class="nav-link {% if active=='pipeline' %}active{% endif %}">
+          <span class="nav-icon">&#9889;</span> One-Click Pipeline
+        </a></li>
+        <li><a href="{{ url_for('script_page') }}" class="nav-link {% if active=='script' %}active{% endif %}">
+          <span class="nav-icon">&#128221;</span> Script Writer
+        </a></li>
+        <li><a href="{{ url_for('voiceover_page') }}" class="nav-link {% if active=='voiceover' %}active{% endif %}">
+          <span class="nav-icon">&#127897;</span> Voiceover
+        </a></li>
+        <li><a href="{{ url_for('thumbnail_page') }}" class="nav-link {% if active=='thumbnail' %}active{% endif %}">
+          <span class="nav-icon">&#128444;</span> Thumbnail
+        </a></li>
+        <li><a href="{{ url_for('footage_page') }}" class="nav-link {% if active=='footage' %}active{% endif %}">
+          <span class="nav-icon">&#127916;</span> Stock Footage
+        </a></li>
+        <li><a href="{{ url_for('analytics_page') }}" class="nav-link {% if active=='analytics' %}active{% endif %}">
+          <span class="nav-icon">&#128202;</span> Analytics
+        </a></li>
+        <li><a href="{{ url_for('history_page') }}" class="nav-link {% if active=='history' %}active{% endif %}">
+          <span class="nav-icon">&#128336;</span> History
+        </a></li>
+        <li><a href="{{ url_for('settings_page') }}" class="nav-link {% if active=='settings' %}active{% endif %}">
+          <span class="nav-icon">&#9881;</span> Settings
+        </a></li>
+      </ul>
+      <div class="sidebar-footer">
+        <span>STUDIO v1.0</span>
+      </div>
+    </nav>
+    <!-- Main Content -->
+    <main class="main-content">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

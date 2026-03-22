@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Stock Footage{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>&#127916; Stock Footage Finder</h1>
+  <p class="page-subtitle">Search and download free footage from Pexels</p>
+</div>
+<div class="card">
+  <form method="POST" action="/footage/search">
+    <div class="form-row">
+      <div class="form-group" style="flex:1">
+        <label>Search Query</label>
+        <input type="text" name="query" class="form-input" placeholder="e.g. morning sunrise city" required>
+      </div>
+      <div class="form-group">
+        <label>&nbsp;</label>
+        <button class="btn btn-primary">Search</button>
+      </div>
+    </div>
+  </form>
+</div>
+{% if videos %}
+<div class="footage-grid">
+  {% for v in videos %}
+  <div class="footage-card">
+    <img src="{{ v.thumbnail }}" class="footage-thumb">
+    <div class="footage-info">
+      <p>{{ v.duration }}s &bull; {{ v.width }}x{{ v.height }}</p>
+      <p class="footage-credit">{{ v.photographer }}</p>
+      <a href="/footage/download?url={{ v.url|urlencode }}" class="btn btn-sm">&#11015; Download</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

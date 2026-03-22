@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}History{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>&#128336; Video History</h1>
+  <p class="page-subtitle">All previously generated videos</p>
+</div>
+{% if history %}
+<div class="history-list">
+  {% for item in history %}
+  <div class="history-card {% if item.success %}success{% else %}failed{% endif %}">
+    {% if item.thumbnail %}
+    <img src="/outputs/{{ item.thumbnail }}" class="history-thumb">
+    {% else %}
+    <div class="history-thumb-placeholder">&#9654;</div>
+    {% endif %}
+    <div class="history-info">
+      <h4>{{ item.title }}</h4>
+      <p class="history-topic">{{ item.topic }}</p>
+      <p class="history-date">{{ item.timestamp[:4] }}-{{ item.timestamp[4:6] }}-{{ item.timestamp[6:8] }}</p>
+      {% if item.youtube_url %}
+      <a href="{{ item.youtube_url }}" target="_blank" class="btn btn-sm">&#9654; YouTube</a>
+      {% endif %}
+    </div>
+    <div class="history-status">
+      {% if item.success %}<span class="badge success">&#10003; Done</span>
+      {% else %}<span class="badge failed">&#10007; Failed</span>{% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="card">
+  <p>No videos generated yet. <a href="/">Start the pipeline</a> to create your first video.</p>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Thumbnail Generator{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>&#128444; Thumbnail Generator</h1>
+  <p class="page-subtitle">Create eye-catching thumbnails with DALL-E 3</p>
+</div>
+<div class="two-col">
+  <div class="card">
+    <h3>Generate Thumbnail</h3>
+    <form method="POST" action="/thumbnail/generate">
+      <div class="form-group">
+        <label>Video Topic</label>
+        <input type="text" name="topic" class="form-input" placeholder="e.g. Morning Routine" required>
+      </div>
+      <div class="form-group">
+        <label>Video Title (optional)</label>
+        <input type="text" name="title" class="form-input" placeholder="e.g. My 5am Morning Routine">
+      </div>
+      <button class="btn btn-primary">Generate Thumbnail</button>
+    </form>
+  </div>
+  {% if result %}
+  <div class="card">
+    <h3>&#10003; Thumbnail Generated</h3>
+    <img src="/outputs/{{ result.filename }}" class="full-thumb">
+    <a href="/outputs/{{ result.filename }}" download class="btn btn-sm">&#11015; Download PNG</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
