@@ -281,6 +281,40 @@ def download_footage():
     return redirect(url_for("footage_page"))
 
 
+# ── Content Calendar ──────────────────────────────────────────────────────────
+@app.route("/calendar")
+def calendar_page():
+    return render_template("calendar.html", active="calendar",
+                           calendar=session.pop("calendar_result", None),
+                           topic_bank=session.pop("topic_bank_result", None))
+
+@app.route("/calendar/generate", methods=["POST"])
+def generate_calendar():
+    import content_calendar as cal
+    niche = request.form.get("niche", "facts")
+    posting_freq = int(request.form.get("posting_freq", 3))
+    result = cal.generate_calendar(niche, posting_freq)
+    if result["success"]:
+        session["calendar_result"] = result
+        flash(f"Generated {result['total_videos']}-video calendar!", "success")
+    else:
+        flash(f"Error: {result['error']}", "error")
+    return redirect(url_for("calendar_page"))
+
+@app.route("/calendar/topics", methods=["POST"])
+def generate_topics():
+    import content_calendar as cal
+    niche = request.form.get("niche", "facts")
+    count = int(request.form.get("count", 50))
+    result = cal.generate_topic_bank(niche, count)
+    if result["success"]:
+        session["topic_bank_result"] = result
+        flash(f"Generated {result['count']} topic ideas!", "success")
+    else:
+        flash(f"Error: {result['error']}", "error")
+    return redirect(url_for("calendar_page"))
+
+
 # ── SEO ──────────────────────────────────────────────────────────────────────
 @app.route("/seo")
 def seo_page():

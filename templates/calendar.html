@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}Content Calendar{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>&#128197; Content Calendar</h1>
+  <p class="page-subtitle">30-day AI-generated content schedule with topic ideas optimized by niche</p>
+</div>
+
+<div class="two-col">
+  <div class="card">
+    <h3>Generate 30-Day Calendar</h3>
+    <form method="POST" action="/calendar/generate">
+      <div class="form-group">
+        <label>Niche</label>
+        <select name="niche" id="calNiche" class="form-select">
+          <option value="finance">Finance & Investing</option>
+          <option value="motivation">Motivational & Quotes</option>
+          <option value="facts" selected>Facts / Did You Know</option>
+          <option value="top10">Top 10 Lists</option>
+          <option value="truecrime">True Crime</option>
+          <option value="history">History</option>
+          <option value="science">Science & Space</option>
+          <option value="selfimprovement">Self Improvement</option>
+          <option value="horror">Horror</option>
+          <option value="meditation">Meditation & Sleep</option>
+          <option value="news">News Summary</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Videos Per Week <span id="freqLabel" class="form-note-inline"></span></label>
+        <select name="posting_freq" class="form-select">
+          <option value="2">2x per week</option>
+          <option value="3" selected>3x per week</option>
+          <option value="4">4x per week</option>
+          <option value="5">5x per week</option>
+          <option value="7">Daily</option>
+        </select>
+      </div>
+      <button class="btn btn-primary">&#128197; Generate Calendar</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h3>Topic Bank Generator</h3>
+    <form method="POST" action="/calendar/topics">
+      <div class="form-group">
+        <label>Niche</label>
+        <select name="niche" class="form-select">
+          <option value="finance">Finance & Investing</option>
+          <option value="facts" selected>Facts / Did You Know</option>
+          <option value="motivation">Motivational</option>
+          <option value="top10">Top 10 Lists</option>
+          <option value="truecrime">True Crime</option>
+          <option value="history">History</option>
+          <option value="science">Science & Space</option>
+          <option value="selfimprovement">Self Improvement</option>
+          <option value="horror">Horror</option>
+          <option value="meditation">Meditation</option>
+          <option value="news">News</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>How many topics?</label>
+        <select name="count" class="form-select">
+          <option value="25">25 topics</option>
+          <option value="50" selected>50 topics</option>
+          <option value="100">100 topics</option>
+        </select>
+      </div>
+      <button class="btn btn-primary">&#128161; Generate Topic Bank</button>
+    </form>
+  </div>
+</div>
+
+{% if calendar %}
+<div class="card">
+  <h3>&#128197; 30-Day Calendar — {{ calendar.niche | title }} ({{ calendar.total_videos }} videos)</h3>
+  <div class="calendar-grid">
+    {% for item in calendar.calendar %}
+    <div class="cal-item {{ item.type }}">
+      <div class="cal-date">{{ item.date }}</div>
+      <div class="cal-title">{{ item.title }}</div>
+      <div class="cal-meta">
+        <span class="cal-type-badge {{ item.type }}">{{ item.type }}</span>
+      </div>
+      <div class="cal-hook">{{ item.hook }}</div>
+      <a href="/?prefill_topic={{ item.title | urlencode }}" class="btn btn-sm" style="margin-top:8px">&#9889; Generate Now</a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+{% if topic_bank %}
+<div class="card">
+  <h3>&#128161; Topic Bank — {{ topic_bank.niche | title }} ({{ topic_bank.count }} ideas)</h3>
+  <div class="topic-bank-grid">
+    {% for topic in topic_bank.topics %}
+    <div class="topic-item">
+      <span>{{ topic }}</span>
+      <a href="/script?prefill_topic={{ topic | urlencode }}" class="btn btn-sm">Write Script</a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<style>
+.calendar-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px; }
+.cal-item { background:var(--bg3); border:1px solid var(--border); border-radius:8px; padding:14px; }
+.cal-item.evergreen { border-left:3px solid #00c850; }
+.cal-item.trending { border-left:3px solid var(--red); }
+.cal-item.seasonal { border-left:3px solid #ffa500; }
+.cal-date { font-size:11px; color:var(--text-muted); margin-bottom:6px; }
+.cal-title { font-size:13px; font-weight:600; margin-bottom:8px; line-height:1.4; }
+.cal-hook { font-size:11px; color:var(--text-muted); font-style:italic; margin-top:6px; }
+.cal-type-badge { font-size:10px; padding:2px 8px; border-radius:10px; font-weight:600; }
+.cal-type-badge.evergreen { background:rgba(0,200,80,.15); color:#00c850; }
+.cal-type-badge.trending { background:rgba(255,0,0,.15); color:var(--red); }
+.cal-type-badge.seasonal { background:rgba(255,165,0,.15); color:#ffa500; }
+.topic-bank-grid { display:flex; flex-direction:column; gap:8px; }
+.topic-item { display:flex; align-items:center; justify-content:space-between; gap:12px; background:var(--bg3); border:1px solid var(--border); border-radius:6px; padding:10px 14px; font-size:13px; }
+.form-note-inline { color:var(--text-muted); font-size:11px; font-weight:400; }
+</style>
+{% endblock %}
