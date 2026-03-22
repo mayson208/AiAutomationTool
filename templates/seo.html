@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}SEO & Metadata{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>&#128202; SEO & Metadata</h1>
+  <p class="page-subtitle">Generate optimized titles, descriptions, and tags — plus the niche CPM reference table</p>
+</div>
+
+<div class="card">
+  <form method="POST" action="/seo/generate">
+    <div class="form-row">
+      <div class="form-group" style="flex:2">
+        <label>Video Topic</label>
+        <input type="text" name="topic" class="form-input" placeholder="e.g. 5 Money Habits That Keep You Poor" required>
+      </div>
+      <div class="form-group">
+        <label>Niche</label>
+        <select name="niche" class="form-select">
+          <option value="finance">Finance & Investing</option>
+          <option value="motivation">Motivational</option>
+          <option value="facts" selected>Facts / Did You Know</option>
+          <option value="top10">Top 10 Lists</option>
+          <option value="truecrime">True Crime</option>
+          <option value="history">History</option>
+          <option value="science">Science & Space</option>
+          <option value="selfimprovement">Self Improvement</option>
+          <option value="horror">Horror</option>
+          <option value="meditation">Meditation & Sleep</option>
+          <option value="news">News</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Working Title (optional)</label>
+      <input type="text" name="title" class="form-input" placeholder="Leave blank to generate from topic">
+    </div>
+    <button class="btn btn-primary">&#128202; Generate SEO Package</button>
+  </form>
+</div>
+
+{% if result %}
+<div class="card">
+  <h3>&#10003; SEO Package — {{ result.niche | title }}</h3>
+
+  <div class="form-group">
+    <label>Title Options (click to copy)</label>
+    {% for title in result.titles %}
+    <div class="title-option" onclick="copyText(this)" data-text="{{ title }}" title="Click to copy">
+      <span class="title-score">{% if result.title_scores and loop.index0 < result.title_scores|length %}{{ result.title_scores[loop.index0] }}/100{% endif %}</span>
+      <span>{{ title }}</span>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="form-group">
+    <label>Description ({{ result.description | length }} chars)</label>
+    <textarea class="form-textarea" rows="10" id="descText">{{ result.description }}</textarea>
+    <button class="btn btn-sm" onclick="copyId('descText')" style="margin-top:6px">Copy Description</button>
+  </div>
+
+  <div class="form-group">
+    <label>Tags ({{ result.tag_count }} tags)</label>
+    <div class="meta-tags">
+      {% for tag in result.tags %}
+      <span class="tag">{{ tag }}</span>
+      {% endfor %}
+    </div>
+    <button class="btn btn-sm" onclick="copyId('tagsInput')" style="margin-top:6px">Copy All Tags</button>
+    <input type="hidden" id="tagsInput" value="{{ result.tags | join(', ') }}">
+  </div>
+
+  {% if result.seo_score %}
+  <div class="alert alert-info">&#128202; SEO Score: {{ result.seo_score }}</div>
+  {% endif %}
+</div>
+{% endif %}
+
+<!-- CPM Reference Table -->
+<div class="card">
+  <h3>&#128181; Niche CPM Reference Table</h3>
+  <p class="form-note">CPM = Cost per 1,000 ad impressions. RPM = what you actually receive after YouTube's 45% cut. Source: research 2025/2026.</p>
+  <table class="data-table">
+    <thead>
+      <tr><th>Niche</th><th>CPM Range</th><th>RPM Range</th><th>Competition</th></tr>
+    </thead>
+    <tbody>
+      {% for niche, data in cpm_table.items() %}
+      <tr>
+        <td><strong>{{ niche }}</strong></td>
+        <td style="color:#00c850">{{ data.cpm }}</td>
+        <td>{{ data.rpm }}</td>
+        <td>
+          {% if data.competition == 'Very High' %}<span class="badge failed">{{ data.competition }}</span>
+          {% elif data.competition == 'High' %}<span class="badge" style="background:rgba(255,165,0,.15);color:#ffa500">{{ data.competition }}</span>
+          {% else %}<span class="badge success">{{ data.competition }}</span>{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.title-option { display:flex; align-items:center; gap:12px; background:var(--bg3); border:1px solid var(--border); border-radius:6px; padding:10px 14px; margin-bottom:8px; cursor:pointer; transition:border-color .2s; }
+.title-option:hover { border-color:var(--red); }
+.title-score { background:var(--bg2); border:1px solid var(--border); border-radius:4px; padding:2px 8px; font-size:11px; font-weight:600; color:var(--text-muted); white-space:nowrap; }
+</style>
+<script>
+function copyText(el) {
+  navigator.clipboard.writeText(el.dataset.text);
+  el.style.borderColor = '#00c850';
+  setTimeout(() => el.style.borderColor = '', 1500);
+}
+function copyId(id) {
+  const el = document.getElementById(id);
+  navigator.clipboard.writeText(el.value || el.textContent);
+}
+</script>
+{% endblock %}

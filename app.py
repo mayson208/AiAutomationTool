@@ -281,6 +281,32 @@ def download_footage():
     return redirect(url_for("footage_page"))
 
 
+# ── SEO ──────────────────────────────────────────────────────────────────────
+@app.route("/seo")
+def seo_page():
+    import seo
+    return render_template("seo.html", active="seo",
+                           result=session.pop("seo_result", None),
+                           cpm_table=seo.get_cpm_table())
+
+@app.route("/seo/generate", methods=["POST"])
+def generate_seo():
+    import seo
+    topic = request.form.get("topic", "").strip()
+    title = request.form.get("title", "").strip()
+    niche = request.form.get("niche", "facts")
+    if not topic:
+        flash("Enter a topic.", "error")
+        return redirect(url_for("seo_page"))
+    script_text = session.get("last_script", "")
+    result = seo.generate_seo_package(topic, title or topic, niche, script_text)
+    if result["success"]:
+        session["seo_result"] = result
+    else:
+        flash(f"Error: {result['error']}", "error")
+    return redirect(url_for("seo_page"))
+
+
 # ── Analytics ─────────────────────────────────────────────────────────────────
 @app.route("/analytics")
 def analytics_page():
