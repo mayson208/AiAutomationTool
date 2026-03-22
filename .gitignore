@@ -13,3 +13,6 @@ node_modules/
 Thumbs.db
 token.pickle
 client_secrets.json
+data/*.json
+!data/.gitkeep
+outputs/previews/
