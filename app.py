@@ -424,5 +424,106 @@ def save_settings():
     return redirect(url_for("settings_page"))
 
 
+# ── Voice Library ─────────────────────────────────────────────────────────────
+@app.route("/voices")
+def voices_page():
+    import voice_manager as vm
+    voices = vm.get_voices()
+    db = vm.get_db()
+    return render_template("voices.html", active="voices",
+                           voices=voices,
+                           active_voice=vm.get_active_voice(),
+                           favorites=vm.get_favorites(),
+                           usage_stats=vm.get_usage_stats(),
+                           last_synced=db.get("last_synced"))
+
+@app.route("/voices/sync", methods=["POST"])
+def sync_voices():
+    import voice_manager as vm
+    result = vm.fetch_voices_from_elevenlabs()
+    if result["success"]:
+        flash(f"Synced {result['count']} voices from ElevenLabs.", "success")
+    else:
+        flash(f"Sync failed: {result['error']}", "error")
+    return redirect(url_for("voices_page"))
+
+@app.route("/voices/set-active", methods=["POST"])
+def set_active_voice():
+    import voice_manager as vm
+    voice_id = request.form.get("voice_id", "")
+    voice_name = request.form.get("voice_name", "")
+    if voice_id:
+        vm.set_active_voice(voice_id, voice_name)
+        # Update runtime config
+        config.ELEVENLABS_VOICE_ID = voice_id
+        flash(f"Active voice set to: {voice_name}", "success")
+    return redirect(url_for("voices_page"))
+
+@app.route("/voices/favorite", methods=["POST"])
+def toggle_favorite():
+    import voice_manager as vm
+    data = request.get_json()
+    voice_id = data.get("voice_id", "")
+    is_fav = vm.toggle_favorite(voice_id)
+    return jsonify({"is_favorite": is_fav})
+
+@app.route("/voices/preview", methods=["POST"])
+def preview_voice():
+    import voice_manager as vm
+    data = request.get_json()
+    voice_id = data.get("voice_id", "")
+    niche = data.get("niche", "general")
+    custom_text = data.get("custom_text", None)
+    result = vm.generate_preview(voice_id, niche, custom_text)
+    return jsonify(result)
+
+@app.route("/outputs/previews/<filename>")
+def serve_preview(filename):
+    previews_dir = config.OUTPUTS_DIR / "previews"
+    return send_from_directory(previews_dir, filename)
+
+@app.route("/voices/clone", methods=["POST"])
+def clone_voice():
+    import voice_manager as vm
+    voice_name = request.form.get("voice_name", "").strip()
+    description = request.form.get("description", "").strip()
+    files = request.files.getlist("audio_files")
+    if not voice_name or not files:
+        flash("Voice name and at least one audio file are required.", "error")
+        return redirect(url_for("voices_page"))
+
+    # Save uploaded files temporarily
+    import tempfile
+    tmp_paths = []
+    with tempfile.TemporaryDirectory() as tmpdir:
+        for f in files:
+            tmp_path = Path(tmpdir) / f.filename
+            f.save(tmp_path)
+            tmp_paths.append(str(tmp_path))
+        result = vm.clone_voice(voice_name, tmp_paths, description)
+
+    if result["success"]:
+        flash(f"Voice '{voice_name}' cloned successfully! Voice ID: {result['voice_id']}", "success")
+    else:
+        flash(f"Clone failed: {result['error']}", "error")
+    return redirect(url_for("voices_page"))
+
+@app.route("/voices/delete", methods=["POST"])
+def delete_voice():
+    import voice_manager as vm
+    voice_id = request.form.get("voice_id", "")
+    result = vm.delete_voice(voice_id)
+    if result["success"]:
+        flash("Voice deleted.", "success")
+    else:
+        flash(f"Delete failed: {result['error']}", "error")
+    return redirect(url_for("voices_page"))
+
+@app.route("/voices/api/active")
+def get_active_voice_api():
+    import voice_manager as vm
+    return jsonify(vm.get_active_voice())
+
+
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
