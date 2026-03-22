@@ -132,7 +132,31 @@ def pipeline_progress(job_id):
 # ── Script Writer ─────────────────────────────────────────────────────────────
 @app.route("/script")
 def script_page():
-    return render_template("script.html", active="script", result=session.pop("script_result", None))
+    return render_template("script.html", active="script",
+                           result=session.pop("script_result", None),
+                           hooks=session.pop("hooks_result", None))
+
+
+@app.route("/script/hooks", methods=["POST"])
+def generate_hooks_route():
+    import script_writer
+    topic = request.form.get("topic", "").strip()
+    niche = request.form.get("niche", "facts")
+    duration = request.form.get("duration", "8")
+    if not topic:
+        flash("Enter a topic.", "error")
+        return redirect(url_for("script_page"))
+    result = script_writer.generate_hooks(topic, niche)
+    if result["success"]:
+        session["hooks_result"] = {
+            "topic": topic,
+            "niche": niche,
+            "duration": duration,
+            "options": result["hooks"],
+        }
+    else:
+        flash(f"Error: {result['error']}", "error")
+    return redirect(url_for("script_page"))
 
 
 @app.route("/script/generate", methods=["POST"])
@@ -140,13 +164,16 @@ def generate_script():
     import script_writer
     topic = request.form.get("topic", "").strip()
     duration = int(request.form.get("duration", 8))
+    niche = request.form.get("niche", "facts")
+    selected_hook = request.form.get("selected_hook", "").strip() or None
     if not topic:
         flash("Enter a topic.", "error")
         return redirect(url_for("script_page"))
-    result = script_writer.generate_script(topic, duration)
+    result = script_writer.generate_script(topic, duration, niche, selected_hook)
     if result["success"]:
         session["script_result"] = result
         session["last_script"] = result["script"]
+        session["last_niche"] = niche
     else:
         flash(f"Error: {result['error']}", "error")
     return redirect(url_for("script_page"))

@@ -3,36 +3,144 @@
 {% block content %}
 <div class="page-header">
   <h1>&#128221; Script Writer</h1>
-  <p class="page-subtitle">Generate a full YouTube script with Claude AI</p>
+  <p class="page-subtitle">AI-generated scripts optimized by niche — with hooks, retention triggers, and humanizer pass</p>
 </div>
-<div class="two-col">
-  <div class="card">
-    <h3>Generate Script</h3>
-    <form method="POST" action="/script/generate">
-      <div class="form-group">
+
+<!-- Hook Generator Step -->
+<div class="card" id="hookStep">
+  <h3>Step 1 — Choose Your Hook</h3>
+  <p class="form-note">Generate 3 hook options first, then pick the best one before writing the full script.</p>
+  <form method="POST" action="/script/hooks">
+    <div class="form-row">
+      <div class="form-group" style="flex:2">
         <label>Video Topic</label>
-        <input type="text" name="topic" class="form-input" placeholder="e.g. How to Wake Up at 5am" required>
+        <input type="text" name="topic" class="form-input" placeholder="e.g. 5 Money Habits That Keep You Poor" required>
       </div>
       <div class="form-group">
-        <label>Duration (minutes)</label>
-        <select name="duration" class="form-select">
-          <option value="5">5 min</option>
-          <option value="8" selected>8 min</option>
-          <option value="10">10 min</option>
+        <label>Niche</label>
+        <select name="niche" id="nicheSelectHook" class="form-select">
+          <option value="finance">Finance & Investing</option>
+          <option value="motivation">Motivational & Quotes</option>
+          <option value="facts" selected>Did You Know / Facts</option>
+          <option value="top10">Top 10 Lists</option>
+          <option value="truecrime">True Crime</option>
+          <option value="history">History</option>
+          <option value="science">Science & Space</option>
+          <option value="selfimprovement">Self Improvement</option>
+          <option value="horror">Horror & Scary Stories</option>
+          <option value="meditation">Meditation & Sleep</option>
+          <option value="news">News Summary</option>
         </select>
       </div>
-      <button class="btn btn-primary">Generate Script</button>
-    </form>
-  </div>
-  {% if result %}
-  <div class="card">
-    <h3>{{ result.title }}</h3>
-    <div class="meta-tags">
-      {% for tag in result.tags.split(',') %}<span class="tag">{{ tag.strip() }}</span>{% endfor %}
     </div>
-    <pre class="script-preview scrollable">{{ result.script }}</pre>
-    <a href="/script/download" class="btn btn-sm">&#11015; Download Script</a>
-  </div>
-  {% endif %}
+    <button class="btn btn-primary">&#9889; Generate 3 Hook Options</button>
+  </form>
 </div>
+
+<!-- Hook Selection + Full Script Generation -->
+{% if hooks %}
+<div class="card">
+  <h3>Step 2 — Pick Your Hook</h3>
+  <form method="POST" action="/script/generate">
+    <input type="hidden" name="topic" value="{{ hooks.topic }}">
+    <input type="hidden" name="niche" value="{{ hooks.niche }}">
+    <input type="hidden" name="duration" value="{{ hooks.duration }}">
+    <div class="hook-options">
+      {% for hook in hooks.options %}
+      <label class="hook-option">
+        <input type="radio" name="selected_hook" value="{{ hook }}" {% if loop.first %}checked{% endif %}>
+        <div class="hook-card">
+          <span class="hook-label">Hook {{ loop.index }} — {{ ['Shock', 'Question', 'Story'][loop.index0] }}</span>
+          <p>{{ hook }}</p>
+        </div>
+      </label>
+      {% endfor %}
+      <label class="hook-option">
+        <input type="radio" name="selected_hook" value="">
+        <div class="hook-card">
+          <span class="hook-label">No preference — let AI decide</span>
+          <p class="text-muted">Claude will write the best hook for this topic</p>
+        </div>
+      </label>
+    </div>
+    <div class="form-group" style="margin-top:16px">
+      <label>Duration (minutes) — auto-set by niche</label>
+      <select name="duration" class="form-select">
+        <option value="5">5 minutes</option>
+        <option value="8">8 minutes</option>
+        <option value="10" selected>10 minutes</option>
+        <option value="15">15 minutes</option>
+        <option value="20">20 minutes</option>
+        <option value="30">30 minutes</option>
+      </select>
+    </div>
+    <button class="btn btn-primary btn-lg">&#9997; Generate Full Script</button>
+  </form>
+</div>
+{% endif %}
+
+<!-- Script Result -->
+{% if result %}
+<div class="card">
+  <h3>&#10003; Script Generated</h3>
+  <div class="script-meta-grid">
+    <div class="script-meta-item">
+      <span class="meta-label">Niche</span>
+      <span class="meta-value">{{ result.niche_label }}</span>
+    </div>
+    <div class="script-meta-item">
+      <span class="meta-label">Est. Duration</span>
+      <span class="meta-value">~{{ result.estimated_minutes }} min</span>
+    </div>
+    <div class="script-meta-item">
+      <span class="meta-label">Word Count</span>
+      <span class="meta-value">{{ result.word_count }}</span>
+    </div>
+    <div class="script-meta-item">
+      <span class="meta-label">Niche CPM</span>
+      <span class="meta-value niche-cpm">{{ result.cpm_range }}</span>
+    </div>
+  </div>
+  <div class="form-group">
+    <label>Title</label>
+    <input type="text" class="form-input" value="{{ result.title }}" readonly>
+  </div>
+  <div class="form-group">
+    <label>Description</label>
+    <textarea class="form-textarea" rows="4" readonly>{{ result.description }}</textarea>
+  </div>
+  <div class="form-group">
+    <label>Tags</label>
+    <div class="meta-tags">
+      {% for tag in result.tags.split(',') %}
+      <span class="tag">{{ tag.strip() }}</span>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="form-group">
+    <label>Full Script</label>
+    <pre class="script-preview scrollable">{{ result.script }}</pre>
+  </div>
+  <div style="display:flex;gap:12px;margin-top:12px">
+    <a href="/script/download" class="btn btn-sm">&#11015; Download Script</a>
+    <a href="/voiceover?prefill=1" class="btn btn-sm">&#127897; Send to Voiceover</a>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<style>
+.script-meta-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px; }
+.script-meta-item { background:var(--bg3); border:1px solid var(--border); border-radius:6px; padding:12px; text-align:center; }
+.meta-label { display:block; font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; }
+.meta-value { display:block; font-size:18px; font-weight:700; margin-top:4px; }
+.niche-cpm { color:#00c850; }
+.hook-options { display:flex; flex-direction:column; gap:12px; margin-bottom:16px; }
+.hook-option { cursor:pointer; }
+.hook-option input { display:none; }
+.hook-card { border:2px solid var(--border); border-radius:8px; padding:14px; transition:border-color .2s; }
+.hook-option input:checked + .hook-card { border-color:var(--red); background:rgba(255,0,0,.05); }
+.hook-label { font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; display:block; }
+</style>
 {% endblock %}
