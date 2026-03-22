@@ -6,6 +6,20 @@
   <p class="page-subtitle">ElevenLabs TTS with niche-optimized voice settings</p>
 </div>
 
+<!-- Active Voice Selector -->
+<div class="card" style="padding:14px 18px;display:flex;align-items:center;gap:16px;margin-bottom:0">
+  <div style="flex:1">
+    <span style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px">Active Voice</span>
+    <div style="font-size:15px;font-weight:600;margin-top:2px" id="voPageVoiceName">Loading...</div>
+  </div>
+  <a href="/voices" class="btn btn-sm">&#127897; Change Voice</a>
+  <script>
+    fetch('/voices/api/active').then(r=>r.json()).then(d=>{
+      document.getElementById('voPageVoiceName').textContent = d.voice_name || 'Not set';
+    });
+  </script>
+</div>
+
 <div class="card">
   <form method="POST" action="/voiceover/generate">
     <div class="form-row">
