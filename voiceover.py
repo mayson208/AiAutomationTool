@@ -54,7 +54,13 @@ def generate_voiceover(script_text: str, output_filename: str = None,
         # Use niche-optimized voice settings
         voice_settings = NICHE_VOICE_SETTINGS.get(niche, NICHE_VOICE_SETTINGS["facts"])
 
-        url = f"{config.ELEVENLABS_API_URL}/text-to-speech/{config.ELEVENLABS_VOICE_ID}"
+        try:
+            import voice_manager as vm
+            active = vm.get_active_voice()
+            active_voice_id = active.get("voice_id") or config.ELEVENLABS_VOICE_ID
+        except Exception:
+            active_voice_id = config.ELEVENLABS_VOICE_ID
+        url = f"{config.ELEVENLABS_API_URL}/text-to-speech/{active_voice_id}"
         headers = {
             "Accept": "audio/mpeg",
             "Content-Type": "application/json",
@@ -74,6 +80,13 @@ def generate_voiceover(script_text: str, output_filename: str = None,
             f.write(response.content)
 
         file_size = os.path.getsize(out_path)
+
+        try:
+            import voice_manager as vm
+            vm.track_usage(active_voice_id, len(clean_text))
+        except Exception:
+            pass
+
         return {
             "success": True,
             "path": str(out_path),
