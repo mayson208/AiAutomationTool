@@ -184,3 +184,20 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 }
 .alert-warning a { color: #ffd54f; text-decoration: underline; }
 .key-warning { margin-bottom: 1rem; }
+
+/* ── Global Voice Bar ──────────────────────────────────────────────────────── */
+.global-voice-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 7px 14px;
+  margin-bottom: 16px;
+  font-size: 12px;
+}
+.gv-label { color: var(--text-muted); }
+.gv-name { font-weight: 600; color: var(--text); }
+.gv-change { color: var(--red); text-decoration: none; margin-left: auto; font-size: 11px; }
+.gv-change:hover { text-decoration: underline; }

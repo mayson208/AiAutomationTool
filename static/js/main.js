@@ -48,3 +48,16 @@ document.querySelectorAll('.alert').forEach(function (el) {
     setTimeout(function () { el.remove(); }, 500);
   }, 4000);
 });
+
+// Load active voice into global bar
+(function() {
+  const bar = document.getElementById('globalVoiceBar');
+  const nameEl = document.getElementById('gvName');
+  if (!bar || !nameEl) return;
+  fetch('/voices/api/active')
+    .then(r => r.json())
+    .then(d => {
+      nameEl.textContent = d.voice_name || 'Not set — click Change';
+    })
+    .catch(() => { nameEl.textContent = 'Not set'; });
+})();
