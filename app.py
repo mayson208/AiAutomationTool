@@ -229,13 +229,15 @@ def generate_thumbnail():
     import thumbnail as thumb
     topic = request.form.get("topic", "").strip()
     title = request.form.get("title", "").strip() or None
+    niche = request.form.get("niche", "facts")
+    variations = int(request.form.get("variations", 1))
     if not topic:
         flash("Enter a topic.", "error")
         return redirect(url_for("thumbnail_page"))
-    result = thumb.generate_thumbnail(topic, title=title)
+    result = thumb.generate_thumbnail(topic, title=title, niche=niche, variations=variations)
     if result["success"]:
         session["thumbnail_result"] = result
-        flash("Thumbnail generated!", "success")
+        flash(f"Generated {result['variation_count']} thumbnail(s)!", "success")
     else:
         flash(f"Error: {result['error']}", "error")
     return redirect(url_for("thumbnail_page"))

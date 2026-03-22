@@ -3,29 +3,79 @@
 {% block content %}
 <div class="page-header">
   <h1>&#128444; Thumbnail Generator</h1>
-  <p class="page-subtitle">Create eye-catching thumbnails with DALL-E 3</p>
+  <p class="page-subtitle">DALL-E 3 thumbnails with niche-specific visual styles</p>
 </div>
-<div class="two-col">
-  <div class="card">
-    <h3>Generate Thumbnail</h3>
-    <form method="POST" action="/thumbnail/generate">
-      <div class="form-group">
+
+<div class="card">
+  <form method="POST" action="/thumbnail/generate">
+    <div class="form-row">
+      <div class="form-group" style="flex:2">
         <label>Video Topic</label>
-        <input type="text" name="topic" class="form-input" placeholder="e.g. Morning Routine" required>
+        <input type="text" name="topic" class="form-input" placeholder="e.g. 5 Money Habits That Keep You Poor" required>
       </div>
       <div class="form-group">
-        <label>Video Title (optional)</label>
-        <input type="text" name="title" class="form-input" placeholder="e.g. My 5am Morning Routine">
+        <label>Niche Style</label>
+        <select name="niche" class="form-select">
+          <option value="finance">Finance & Investing</option>
+          <option value="motivation">Motivational</option>
+          <option value="facts" selected>Facts / Did You Know</option>
+          <option value="top10">Top 10 Lists</option>
+          <option value="truecrime">True Crime</option>
+          <option value="history">History</option>
+          <option value="science">Science & Space</option>
+          <option value="selfimprovement">Self Improvement</option>
+          <option value="horror">Horror</option>
+          <option value="meditation">Meditation & Sleep</option>
+          <option value="news">News</option>
+        </select>
       </div>
-      <button class="btn btn-primary">Generate Thumbnail</button>
-    </form>
+    </div>
+    <div class="form-row">
+      <div class="form-group" style="flex:2">
+        <label>Custom Title Override (optional)</label>
+        <input type="text" name="title" class="form-input" placeholder="Leave blank to use topic">
+      </div>
+      <div class="form-group">
+        <label>Variations to Generate</label>
+        <select name="variations" class="form-select">
+          <option value="1">1 thumbnail</option>
+          <option value="2">2 thumbnails (A/B test)</option>
+          <option value="3" selected>3 thumbnails (A/B/C test)</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-lg">&#128444; Generate Thumbnails</button>
+  </form>
+</div>
+
+{% if result %}
+<div class="card">
+  <h3>&#10003; {{ result.variation_count }} Thumbnail(s) Generated</h3>
+  <p class="form-note">Upload all variations to YouTube and A/B test for best CTR</p>
+  <div class="thumb-grid">
+    {% for v in result.variations %}
+    <div class="thumb-variation">
+      <img src="/outputs/thumbnails/{{ v.filename }}" class="full-thumb" alt="Thumbnail variation {{ loop.index }}">
+      <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+        <span class="badge-outline">Variation {{ loop.index }}</span>
+        <a href="/outputs/thumbnails/{{ v.filename }}" download class="btn btn-sm">&#11015; Download</a>
+      </div>
+    </div>
+    {% endfor %}
   </div>
-  {% if result %}
-  <div class="card">
-    <h3>&#10003; Thumbnail Generated</h3>
-    <img src="/outputs/{{ result.filename }}" class="full-thumb">
-    <a href="/outputs/{{ result.filename }}" download class="btn btn-sm">&#11015; Download PNG</a>
+  {% if result.niche %}
+  <div class="ctr-tips" style="margin-top:16px">
+    <h4>CTR Tips for {{ result.niche | title }} Niche</h4>
   </div>
   {% endif %}
 </div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<style>
+.thumb-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; }
+.thumb-variation { background:var(--bg3); border-radius:8px; padding:12px; }
+.badge-outline { border:1px solid var(--border); border-radius:12px; padding:3px 10px; font-size:11px; color:var(--text-muted); }
+</style>
 {% endblock %}
