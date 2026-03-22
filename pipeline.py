@@ -1,6 +1,7 @@
 """pipeline.py — Orchestrate the full one-click video automation pipeline."""
 import os
 import json
+import threading
 from datetime import datetime
 from pathlib import Path
 import config
@@ -13,6 +14,12 @@ import youtube_uploader
 
 HISTORY_FILE = config.BASE_DIR / "outputs" / "history.json"
 
+QUALITY_TIERS = {
+    "fast":     {"thumbnail_variations": 1, "thumbnail_quality": "standard", "max_clips": 3, "script_humanize": False},
+    "balanced": {"thumbnail_variations": 2, "thumbnail_quality": "standard", "max_clips": 5, "script_humanize": True},
+    "premium":  {"thumbnail_variations": 3, "thumbnail_quality": "hd",       "max_clips": 8, "script_humanize": True},
+}
+
 def _load_history():
     if HISTORY_FILE.exists():
         with open(HISTORY_FILE) as f:
@@ -22,86 +29,117 @@ def _load_history():
 def _save_history(entry: dict):
     history = _load_history()
     history.insert(0, entry)
-    history = history[:50]  # Keep last 50
+    history = history[:50]
     HISTORY_FILE.parent.mkdir(exist_ok=True)
     with open(HISTORY_FILE, "w") as f:
         json.dump(history, f, indent=2)
 
-def run_pipeline(topic: str, duration_minutes: int = 8,
+def _retry(func, *args, retries=3, **kwargs):
+    """Call func with retries on failure."""
+    last_error = None
+    for attempt in range(retries):
+        result = func(*args, **kwargs)
+        if result.get("success"):
+            return result
+        last_error = result.get("error", "Unknown error")
+        if attempt < retries - 1:
+            import time; time.sleep(2 ** attempt)  # exponential backoff
+    return {"success": False, "error": f"Failed after {retries} attempts: {last_error}"}
+
+def run_pipeline(topic: str, duration_minutes: int = None,
                  upload: bool = False, privacy: str = "private",
+                 niche: str = "facts", quality_tier: str = "balanced",
                  progress_callback=None) -> dict:
-    """
-    Run the full automation pipeline for a given topic.
-    progress_callback(step: int, total: int, message: str) — optional UI callback.
-    """
+    """Run the full automation pipeline with niche optimization and quality tiers."""
+    tier = QUALITY_TIERS.get(quality_tier, QUALITY_TIERS["balanced"])
+
     def progress(step, msg):
         if progress_callback:
             progress_callback(step, 6, msg)
 
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    result = {"topic": topic, "timestamp": ts, "steps": {}}
+    result = {"topic": topic, "niche": niche, "quality_tier": quality_tier, "timestamp": ts, "steps": {}}
 
     # Step 1 — Script
-    progress(1, "Generating script with Claude...")
-    script_result = script_writer.generate_script(topic, duration_minutes)
+    progress(1, f"Generating {niche} script with Claude...")
+    script_result = _retry(script_writer.generate_script, topic,
+                           duration_minutes=duration_minutes, niche=niche)
     result["steps"]["script"] = script_result
     if not script_result["success"]:
         return {"success": False, "error": f"Script failed: {script_result['error']}", **result}
 
-    # Step 2 — Voiceover
-    progress(2, "Generating voiceover with ElevenLabs...")
-    vo_result = voiceover.generate_voiceover(
-        script_result["script"], output_filename=f"voiceover_{ts}.mp3"
-    )
+    # Step 2 — Voiceover + Parallel: Thumbnail + Footage search
+    progress(2, "Generating voiceover and searching footage in parallel...")
+
+    thumb_result = {"success": False, "error": "Not started"}
+    footage_result = {"success": False, "error": "Not started"}
+
+    def gen_thumbnail():
+        nonlocal thumb_result
+        thumb_result = _retry(thumbnail.generate_thumbnail, topic,
+                               title=script_result.get("title"),
+                               niche=niche,
+                               variations=tier["thumbnail_variations"])
+
+    def search_footage_parallel():
+        nonlocal footage_result
+        footage_result = _retry(footage.search_footage, topic, per_page=tier["max_clips"])
+
+    # Start parallel tasks
+    t1 = threading.Thread(target=gen_thumbnail)
+    t2 = threading.Thread(target=search_footage_parallel)
+    t1.start(); t2.start()
+
+    # Generate voiceover while parallel tasks run
+    vo_result = _retry(voiceover.generate_voiceover,
+                        script_result["script"],
+                        niche=niche,
+                        output_filename=f"voiceover_{niche}_{ts}.mp3")
     result["steps"]["voiceover"] = vo_result
+
+    # Wait for parallel tasks
+    t1.join(); t2.join()
+    result["steps"]["thumbnail"] = thumb_result
+    result["steps"]["footage"] = footage_result
+
     if not vo_result["success"]:
         return {"success": False, "error": f"Voiceover failed: {vo_result['error']}", **result}
 
-    # Step 3 — Thumbnail
-    progress(3, "Generating thumbnail with DALL-E...")
-    thumb_result = thumbnail.generate_thumbnail(
-        topic, title=script_result.get("title"), output_filename=f"thumbnail_{ts}.png"
-    )
-    result["steps"]["thumbnail"] = thumb_result
-    # Non-fatal if thumbnail fails
-
-    # Step 4 — Stock footage
-    progress(4, "Searching Pexels for stock footage...")
-    footage_result = footage.search_footage(topic, per_page=5)
-    result["steps"]["footage"] = footage_result
+    # Step 3 — Download clips
+    progress(3, "Downloading stock footage clips...")
     clip_paths = []
-    if footage_result["success"] and footage_result["videos"]:
-        for i, vid in enumerate(footage_result["videos"][:3]):
-            dl = footage.download_clip(vid["url"], output_filename=f"clip_{ts}_{i}.mp4")
+    if footage_result["success"] and footage_result.get("videos"):
+        for i, vid in enumerate(footage_result["videos"][:tier["max_clips"]]):
+            dl = footage.download_clip(vid["url"], output_filename=f"clip_{niche}_{ts}_{i}.mp4")
             if dl["success"]:
                 clip_paths.append(dl["path"])
 
-    # Step 5 — Assemble video
-    progress(5, "Assembling video with MoviePy...")
+    # Step 4 — Assemble video
+    progress(4, "Assembling video...")
     if clip_paths:
-        video_result = video_assembler.assemble_video(
-            vo_result["path"], clip_paths, output_filename=f"video_{ts}.mp4"
-        )
+        video_result = _retry(video_assembler.assemble_video,
+                               vo_result["path"], clip_paths,
+                               output_filename=f"video_{niche}_{ts}.mp4")
     else:
         video_result = {"success": False, "error": "No clips downloaded — skipping assembly"}
     result["steps"]["video"] = video_result
 
-    # Step 6 — Upload (optional)
+    # Step 5 — Upload (optional)
+    progress(5, "Uploading to YouTube..." if upload else "Skipping upload...")
     upload_result = {"success": False, "error": "Upload skipped"}
     if upload and video_result.get("success"):
-        progress(6, "Uploading to YouTube...")
         tags = [t.strip() for t in script_result.get("tags", "").split(",") if t.strip()]
-        upload_result = youtube_uploader.upload_video(
-            video_path=video_result["path"],
-            title=script_result.get("title", topic),
-            description=script_result.get("description", ""),
-            tags=tags,
-            privacy=privacy,
-        )
+        upload_result = _retry(youtube_uploader.upload_video,
+                                video_path=video_result["path"],
+                                title=script_result.get("title", topic),
+                                description=script_result.get("description", ""),
+                                tags=tags, privacy=privacy)
     result["steps"]["upload"] = upload_result
 
+    progress(6, "Pipeline complete!")
+
     entry = {
-        "topic": topic,
+        "topic": topic, "niche": niche, "quality_tier": quality_tier,
         "timestamp": ts,
         "title": script_result.get("title", topic),
         "thumbnail": thumb_result.get("filename") if thumb_result.get("success") else None,
@@ -113,7 +151,7 @@ def run_pipeline(topic: str, duration_minutes: int = 8,
 
     return {
         "success": True,
-        "topic": topic,
+        "topic": topic, "niche": niche,
         "title": script_result.get("title", topic),
         "script": script_result.get("script", ""),
         "voiceover_path": vo_result.get("path"),

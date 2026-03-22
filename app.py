@@ -78,6 +78,9 @@ def run_pipeline():
         flash(f"Missing API keys: {', '.join(missing)}. Go to Settings.", "error")
         return redirect(url_for("index"))
 
+    niche = request.form.get("niche", "facts")
+    quality_tier = request.form.get("quality_tier", "balanced")
+
     job_id = str(uuid.uuid4())
     job = _create_job(job_id)
     q = job["queue"]
@@ -91,6 +94,8 @@ def run_pipeline():
             duration_minutes=duration,
             upload=upload,
             privacy=privacy,
+            niche=niche,
+            quality_tier=quality_tier,
             progress_callback=progress,
         )
         with _jobs_lock:
