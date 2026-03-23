@@ -103,12 +103,18 @@
     </div>
   </div>
   <div class="form-group">
-    <label>Title</label>
-    <input type="text" class="form-input" value="{{ result.title }}" readonly>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <label style="margin:0">Title</label>
+      <button class="btn-copy" data-copy="scriptTitle">Copy</button>
+    </div>
+    <input type="text" id="scriptTitle" class="form-input" value="{{ result.title }}" readonly>
   </div>
   <div class="form-group">
-    <label>Description</label>
-    <textarea class="form-textarea" rows="4" readonly>{{ result.description }}</textarea>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <label style="margin:0">Description</label>
+      <button class="btn-copy" data-copy="scriptDesc">Copy</button>
+    </div>
+    <textarea id="scriptDesc" class="form-textarea" rows="4" readonly>{{ result.description }}</textarea>
   </div>
   <div class="form-group">
     <label>Tags</label>
@@ -119,8 +125,11 @@
     </div>
   </div>
   <div class="form-group">
-    <label>Full Script</label>
-    <pre class="script-preview scrollable">{{ result.script }}</pre>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <label style="margin:0">Full Script</label>
+      <button class="btn-copy" data-copy="scriptBody">Copy</button>
+    </div>
+    <pre id="scriptBody" class="script-preview scrollable">{{ result.script }}</pre>
   </div>
   <div style="display:flex;gap:12px;margin-top:12px">
     <a href="/script/download" class="btn btn-sm">&#11015; Download Script</a>
@@ -143,5 +152,7 @@
 .hook-card { border:2px solid var(--border); border-radius:8px; padding:14px; transition:border-color .2s; }
 .hook-option input:checked + .hook-card { border-color:var(--red); background:rgba(255,0,0,.05); }
 .hook-label { font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; display:block; }
+.btn-copy { background:none; border:1px solid var(--border); color:var(--text-muted); border-radius:6px; padding:3px 10px; font-size:12px; cursor:pointer; }
+.btn-copy:hover { border-color:var(--accent); color:var(--accent); }
 </style>
 {% endblock %}
