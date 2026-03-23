@@ -20,6 +20,7 @@ NICHE_CPM_TABLE = {
     "Top 10 Lists":           {"cpm": "$4-8",   "rpm": "$2-5",  "competition": "Very High"},
     "News Summary":           {"cpm": "$4-8",   "rpm": "$2-5",  "competition": "High"},
     "Meditation & Sleep":     {"cpm": "$3-6",   "rpm": "$2-3",  "competition": "Medium"},
+    "Roblox Gaming":          {"cpm": "$2-4 (⚠️ ~$0.30 if Made for Kids)", "rpm": "$1.50-3", "competition": "Very High"},
 }
 
 def generate_seo_package(topic: str, title: str, niche: str, script_text: str = "") -> dict:

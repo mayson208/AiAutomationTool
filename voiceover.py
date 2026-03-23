@@ -19,6 +19,7 @@ NICHE_VOICE_SETTINGS = {
     "horror":        {"stability": 0.60, "similarity_boost": 0.75, "style": 0.45, "use_speaker_boost": True},
     "meditation":    {"stability": 0.85, "similarity_boost": 0.90, "style": 0.05, "use_speaker_boost": False},
     "news":          {"stability": 0.75, "similarity_boost": 0.85, "style": 0.15, "use_speaker_boost": True},
+    "roblox":        {"stability": 0.45, "similarity_boost": 0.70, "style": 0.55, "use_speaker_boost": True},
 }
 
 def _clean_script(script_text: str) -> str:

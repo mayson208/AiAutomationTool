@@ -96,6 +96,14 @@ NICHES = {
         "optimal_minutes": 7,
         "cpm": "$4-8",
     },
+    "roblox": {
+        "label": "Roblox Gaming",
+        "tone": "energetic, upbeat, slightly dramatic — teen and young adult audience",
+        "style": "State the challenge or premise in the first 5 seconds. Use first-person framing ('I tried...', 'I survived...'). Build a challenge arc with setup, tension, and resolution. Include commentary and reaction moments. Fast-paced with humor. IMPORTANT: Frame as teen/adult content — avoid child-directed language to prevent 'Made for Kids' classification which eliminates monetization.",
+        "hook_style": "state the bold challenge or premise immediately — shock them in 5 seconds",
+        "optimal_minutes": 12,
+        "cpm": "$2-4 (WARNING: 'Made for Kids' label drops CPM to ~$0.30 — frame as teen/adult content)",
+    },
 }
 
 HOOK_FORMULAS = [
