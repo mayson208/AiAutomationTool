@@ -17,6 +17,7 @@ NICHE_THUMBNAIL_STYLES = {
     "horror": "Dark and terrifying. Nearly black background. Red accents. Unsettling imagery, shadows, or horror symbols. High contrast. Designed to make viewer feel uneasy.",
     "meditation": "Serene and peaceful. Soft blues, purples, and whites. Nature elements — water, mountains, clouds. Calming. Soft gradients. No sharp contrasts.",
     "news": "Professional news aesthetic. Clean, serious. Dark background with bright accent. Map or globe imagery. Professional typography space. Credible and authoritative.",
+    "roblox": "High-energy Roblox gaming thumbnail. Neon and vibrant colors — electric blue, hot pink, bright yellow. Exaggerated shocked or excited expression on an avatar or player. Bold 2-3 word text overlay. Blurred or stylized Roblox game background. Young, energetic, high-CTR style.",
 }
 
 NICHE_PROMPTS = {
@@ -28,6 +29,7 @@ NICHE_PROMPTS = {
     "science": "A stunning YouTube thumbnail for a science video titled: \"{title}\". {style} Make it feel like a premium science documentary. 16:9 ratio, no borders, no watermarks.",
     "horror": "A terrifying YouTube thumbnail for a horror video titled: \"{title}\". {style} Make it feel genuinely unsettling. 16:9 ratio, no borders, no watermarks.",
     "meditation": "A peaceful YouTube thumbnail for a meditation video titled: \"{title}\". {style} Make it feel deeply calming. 16:9 ratio, no borders, no watermarks.",
+    "roblox": "A high-energy Roblox YouTube thumbnail for a video titled: \"{title}\". {style} Make it look like a viral Roblox channel thumbnail that gets clicked by teens. 16:9 ratio, no borders, no watermarks.",
 }
 
 def _get_prompt(topic: str, title: str, niche: str) -> str:

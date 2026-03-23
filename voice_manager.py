@@ -25,6 +25,7 @@ NICHE_SAMPLES = {
     "news":          "Here are the five most important stories you need to know about today, explained clearly and concisely in under ten minutes.",
     "top10":         "From number ten down to the most shocking entry at number one — here are the top ten mysteries that science still cannot explain.",
     "general":       "Welcome to STUDIO — your AI-powered YouTube automation platform. Let's create something amazing together.",
+    "roblox":        "I tried to beat the hardest obby in Roblox using only the starter character — and what happened next absolutely broke the game.",
 }
 
 # Voice personality tags and niche recommendations (for curated/built-in voices)
@@ -181,6 +182,7 @@ NICHE_PRESETS = {
     "meditation":    {"stability": 0.85, "similarity_boost": 0.90, "style": 0.05},
     "news":          {"stability": 0.75, "similarity_boost": 0.85, "style": 0.15},
     "general":       {"stability": 0.60, "similarity_boost": 0.75, "style": 0.30},
+    "roblox":        {"stability": 0.45, "similarity_boost": 0.70, "style": 0.55},
 }
 
 def get_voice_settings(voice_id: str, niche: str = "general") -> dict:
@@ -321,6 +323,7 @@ NICHE_VOICE_TRAITS = {
     "news":          ["professional", "neutral", "authoritative", "clear", "news"],
     "top10":         ["engaging", "energetic", "entertaining", "clear", "friendly"],
     "general":       ["clear", "neutral", "professional"],
+    "roblox":        ["energetic", "young", "upbeat", "entertaining", "gaming", "enthusiastic"],
 }
 
 def get_recommended_voices(niche: str, all_voices: list) -> list:
