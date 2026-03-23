@@ -23,7 +23,7 @@ NICHE_CPM_TABLE = {
     "Roblox Gaming":          {"cpm": "$2-4 (⚠️ ~$0.30 if Made for Kids)", "rpm": "$1.50-3", "competition": "Very High"},
 }
 
-def generate_seo_package(topic: str, title: str, niche: str, script_text: str = "") -> dict:
+def generate_seo_package(topic: str, title: str, niche: str, script_text: str = "") -> dict[str, object]:
     """Generate complete SEO package: 5 titles, description, tags, chapters."""
     if not config.ANTHROPIC_API_KEY:
         return {"success": False, "error": "ANTHROPIC_API_KEY not set"}
@@ -114,5 +114,5 @@ TITLE_SCORES:
     except Exception as e:
         return {"success": False, "error": str(e)}
 
-def get_cpm_table() -> dict:
+def get_cpm_table() -> dict[str, dict[str, str]]:
     return NICHE_CPM_TABLE

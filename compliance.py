@@ -21,7 +21,7 @@ def get_ai_disclosure(format: str = "description") -> str:
         return "⚠️ AI-assisted content. See description."
     return REQUIRED_DISCLOSURE
 
-def check_script_policy(script_text: str) -> dict:
+def check_script_policy(script_text: str) -> dict[str, object]:
     """Flag potential policy violations in a script."""
     issues = []
     warnings = []
@@ -69,14 +69,14 @@ def check_script_policy(script_text: str) -> dict:
         "disclosure_text": get_ai_disclosure("description"),
     }
 
-def build_compliant_description(description: str, niche: str) -> str:
+def build_compliant_description(description: str, niche: str) -> str:  # noqa: ARG001
     """Add AI disclosure and compliance elements to a description."""
     compliant = description
     if "ai disclosure" not in description.lower() and "artificial intelligence" not in description.lower():
         compliant += get_ai_disclosure("description")
     return compliant
 
-def check_music_license(music_source: str) -> dict:
+def check_music_license(music_source: str) -> dict[str, str]:
     """Check if a music source is safe for YouTube monetization."""
     safe_sources = {
         "youtube audio library": "Safe — royalty-free, no attribution needed",
