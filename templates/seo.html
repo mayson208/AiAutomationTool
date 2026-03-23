@@ -27,6 +27,7 @@
           <option value="horror">Horror</option>
           <option value="meditation">Meditation & Sleep</option>
           <option value="news">News</option>
+          <option value="roblox">Roblox Gaming</option>
         </select>
       </div>
     </div>
@@ -109,13 +110,24 @@
 </style>
 <script>
 function copyText(el) {
-  navigator.clipboard.writeText(el.dataset.text);
-  el.style.borderColor = '#00c850';
-  setTimeout(() => el.style.borderColor = '', 1500);
+  navigator.clipboard.writeText(el.dataset.text).then(() => {
+    el.style.borderColor = '#00c850';
+    const orig = el.querySelector('span:last-child').textContent;
+    el.querySelector('span:last-child').textContent = '✓ Copied!';
+    setTimeout(() => { el.style.borderColor = ''; el.querySelector('span:last-child').textContent = orig; }, 1500);
+  });
 }
 function copyId(id) {
   const el = document.getElementById(id);
-  navigator.clipboard.writeText(el.value || el.textContent);
+  const btn = el.nextElementSibling || event.target;
+  navigator.clipboard.writeText(el.value || el.textContent).then(() => {
+    if (btn && btn.tagName === 'BUTTON') {
+      const orig = btn.textContent;
+      btn.textContent = '✓ Copied!';
+      btn.style.color = '#00c850';
+      setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 1500);
+    }
+  });
 }
 </script>
 {% endblock %}
