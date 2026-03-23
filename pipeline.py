@@ -5,12 +5,15 @@ import threading
 from datetime import datetime
 from pathlib import Path
 import config
+from studio_logger import get_logger
 import script_writer
 import voiceover
 import thumbnail
 import footage
 import video_assembler
 import youtube_uploader
+
+logger = get_logger(__name__)
 
 HISTORY_FILE = config.BASE_DIR / "outputs" / "history.json"
 
@@ -43,7 +46,11 @@ def _retry(func, *args, retries=3, **kwargs):
             return result
         last_error = result.get("error", "Unknown error")
         if attempt < retries - 1:
-            import time; time.sleep(2 ** attempt)  # exponential backoff
+            import time
+            wait = 2 ** attempt
+            logger.warning("Attempt %d failed: %s — retrying in %ds", attempt + 1, last_error, wait)
+            time.sleep(wait)
+    logger.error("All %d attempts failed: %s", retries, last_error)
     return {"success": False, "error": f"Failed after {retries} attempts: {last_error}"}
 
 def run_pipeline(topic: str, duration_minutes: int = None,
@@ -59,9 +66,11 @@ def run_pipeline(topic: str, duration_minutes: int = None,
 
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     result = {"topic": topic, "niche": niche, "quality_tier": quality_tier, "timestamp": ts, "steps": {}}
+    logger.info("Pipeline started — topic=%r niche=%s quality=%s", topic, niche, quality_tier)
 
     # Step 1 — Script
     progress(1, f"Generating {niche} script with Claude...")
+    logger.info("Step 1: generating script")
     script_result = _retry(script_writer.generate_script, topic,
                            duration_minutes=duration_minutes, niche=niche)
     result["steps"]["script"] = script_result
