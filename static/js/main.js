@@ -49,6 +49,22 @@ document.querySelectorAll('.alert').forEach(function (el) {
   }, 4000);
 });
 
+// One-click copy for any element with data-copy attribute
+document.addEventListener('click', function (e) {
+  const btn = e.target.closest('[data-copy]');
+  if (!btn) return;
+  const targetId = btn.getAttribute('data-copy');
+  const target = targetId ? document.getElementById(targetId) : btn.previousElementSibling;
+  if (!target) return;
+  const text = target.value !== undefined ? target.value : target.innerText;
+  navigator.clipboard.writeText(text.trim()).then(function () {
+    const original = btn.textContent;
+    btn.textContent = '✓ Copied!';
+    btn.style.color = '#00c850';
+    setTimeout(function () { btn.textContent = original; btn.style.color = ''; }, 1500);
+  });
+});
+
 // Load active voice into global bar
 (function() {
   const bar = document.getElementById('globalVoiceBar');
