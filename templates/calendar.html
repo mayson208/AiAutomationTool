@@ -75,7 +75,10 @@
 
 {% if calendar %}
 <div class="card">
-  <h3>&#128197; 30-Day Calendar — {{ calendar.niche | title }} ({{ calendar.total_videos }} videos)</h3>
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:16px">
+    <h3 style="margin:0">&#128197; 30-Day Calendar — {{ calendar.niche | title }} ({{ calendar.total_videos }} videos)</h3>
+    <a href="{{ url_for('export_calendar') }}" class="btn btn-sm">&#11015; Export CSV</a>
+  </div>
   <div class="calendar-grid">
     {% for item in calendar.calendar %}
     <div class="cal-item {{ item.type }}">
@@ -94,7 +97,10 @@
 
 {% if topic_bank %}
 <div class="card">
-  <h3>&#128161; Topic Bank — {{ topic_bank.niche | title }} ({{ topic_bank.count }} ideas)</h3>
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:16px">
+    <h3 style="margin:0">&#128161; Topic Bank — {{ topic_bank.niche | title }} ({{ topic_bank.count }} ideas)</h3>
+    <a href="{{ url_for('export_topics') }}" class="btn btn-sm">&#11015; Export TXT</a>
+  </div>
   <div class="topic-bank-grid">
     {% for topic in topic_bank.topics %}
     <div class="topic-item">

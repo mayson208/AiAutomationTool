@@ -388,6 +388,44 @@ def generate_topics():
     return redirect(url_for("calendar_page"))
 
 
+@app.route("/calendar/export")
+def export_calendar():
+    """Export the last generated calendar as a CSV file."""
+    import csv, io
+    cal_data = session.get("calendar_result")
+    if not cal_data or not cal_data.get("calendar"):
+        flash("Generate a calendar first.", "error")
+        return redirect(url_for("calendar_page"))
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Date", "Day", "Topic", "Type", "Niche"])
+    for entry in cal_data["calendar"]:
+        writer.writerow([
+            entry.get("date", ""), entry.get("day", ""),
+            entry.get("topic", ""), entry.get("type", ""),
+            cal_data.get("niche", ""),
+        ])
+    csv_content = output.getvalue()
+    return Response(
+        csv_content, mimetype="text/csv",
+        headers={"Content-Disposition": "attachment; filename=content-calendar.csv"},
+    )
+
+
+@app.route("/calendar/export-topics")
+def export_topics():
+    """Export the last generated topic bank as a plain text file."""
+    bank = session.get("topic_bank_result")
+    if not bank or not bank.get("topics"):
+        flash("Generate a topic bank first.", "error")
+        return redirect(url_for("calendar_page"))
+    content = "\n".join(bank["topics"])
+    return Response(
+        content, mimetype="text/plain",
+        headers={"Content-Disposition": "attachment; filename=topic-bank.txt"},
+    )
+
+
 # ── SEO ──────────────────────────────────────────────────────────────────────
 @app.route("/seo")
 def seo_page():
