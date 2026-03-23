@@ -17,8 +17,46 @@ import config
 app = Flask(__name__)
 app.secret_key = config.FLASK_SECRET_KEY
 
+# Warn if using the default insecure secret key
+if config.FLASK_SECRET_KEY == "dev-secret-key":
+    import warnings
+    warnings.warn(
+        "FLASK_SECRET_KEY is set to the default value. Set a strong random key in .env before deploying.",
+        stacklevel=2,
+    )
+
 # Ensure outputs dir exists
 config.OUTPUTS_DIR.mkdir(exist_ok=True)
+
+
+# ── Security headers ───────────────────────────────────────────────────────────
+@app.after_request
+def add_security_headers(response):
+    """Add HTTP security headers to every response."""
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "SAMEORIGIN"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    return response
+
+
+# ── Health check ───────────────────────────────────────────────────────────────
+@app.route("/health")
+def health():
+    """Return JSON status of all API keys — useful for debugging setup."""
+    return jsonify({
+        "status": "ok",
+        "keys": {
+            "ANTHROPIC_API_KEY":   bool(config.ANTHROPIC_API_KEY),
+            "ELEVENLABS_API_KEY":  bool(config.ELEVENLABS_API_KEY),
+            "ELEVENLABS_VOICE_ID": bool(config.ELEVENLABS_VOICE_ID),
+            "OPENAI_API_KEY":      bool(config.OPENAI_API_KEY),
+            "PEXELS_API_KEY":      bool(config.PEXELS_API_KEY),
+            "YOUTUBE_CLIENT_ID":   bool(config.YOUTUBE_CLIENT_ID),
+        },
+        "missing": config.missing_keys(),
+        "flask_secret_safe": config.FLASK_SECRET_KEY != "dev-secret-key",
+    })
 
 # ── Job store for SSE progress ─────────────────────────────────────────────────
 _jobs: dict = {}  # job_id -> {"queue": Queue, "result": dict|None, "done": bool}
