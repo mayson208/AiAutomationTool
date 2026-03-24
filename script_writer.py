@@ -63,10 +63,54 @@ Say 'they figured out' not 'scholars determined'.
 Use scale and comparison: 'That's taller than a 20-story building. And they built it without cranes.'
 Use wonder: 'Think about what that actually means...'
 Make the past feel immediate — use present tense descriptions when describing historical scenes.
-Sound like you personally can't believe this is real, because it genuinely is that wild.""",
-        "hook_style": "a jaw-dropping historical fact or scene delivered cold in the first two sentences — something so surprising the viewer HAS to keep watching to understand how it's possible",
+Sound like you personally can't believe this is real, because it genuinely is that wild.
+
+Every 90-120 seconds add a pattern interrupt — shift the angle, ask a sharp question, or drop a surprise before continuing.
+End sections with a teaser for what comes next — never let a section land flat.
+Use curiosity gaps: start a revelation, pause with '...', then land the payoff after a beat.""",
+        "hook_style": "a jaw-dropping historical fact or scene delivered cold in the first two sentences — something so surprising the viewer HAS to keep watching to understand how it's possible. Best formulas: 'Did you know...' with a genuinely shocking fact, 'Everything you learned about X is wrong', or drop into a dramatic scene mid-action with no setup",
         "optimal_minutes": 15,
         "cpm": "$5-10",
+    },
+    "history_short": {
+        "label": "History Shorts (60-Second Format)",
+        "tone": "urgent, punchy, and genuinely amazed — like you're texting a friend something insane you just found out and you only have 60 seconds to tell them before they have to leave",
+        "style": """This is a YouTube Short. The entire video is 45-60 seconds. Every single word has to earn its place.
+
+STRUCTURE (strictly follow this):
+- Hook (0-3s): One sentence. Drop the most shocking or counterintuitive fact raw — no setup, no 'Did you know', just the statement. Make them need to know how that's possible.
+- Curiosity builder (3-15s): One or two sentences of context that deepen the mystery rather than solve it. Make it weirder before you explain it.
+- Micro-lesson (15-45s): The single most interesting thing about this topic explained simply. One fact, one insight, one story beat. Never try to cover multiple things.
+- Satisfying close / loop (45-60s): End with a callback to the opening hook or a gut-punch one-liner that makes the whole thing click. Ideally the ending makes the viewer want to watch again from the start (loop structure).
+
+RULES:
+- Single topic. One fact or story. No branching.
+- 80-120 words total. Count every word.
+- Short punchy sentences — 5-10 words max per sentence.
+- Contractions everywhere. 'It didn't' not 'it did not'. 'They couldn't' not 'they could not'.
+- No filler: cut 'basically', 'actually', 'essentially', 'as we know'.
+- No CTA longer than one word ('Subscribe.' or nothing). Long CTAs kill the loop.
+- No '[B-ROLL]' section headers needed — just write the narration cleanly.
+- Present tense for historical scenes: 'It's 1347. A ship pulls into port...'
+- Use '...' for micro-pauses where the weird stuff should land.
+
+BEST HOOK FORMULAS FOR HISTORY SHORTS:
+- 'Did you know [shocking historical fact most people have never heard]?'
+- 'Everything you learned about [X] is wrong.'
+- 'Nobody talks about [the wildest part of this event].'
+- Drop into a scene cold: 'It's [year]. [Something unexpected is happening].'
+- Counterintuitive reversal: '[Common belief]. But that's completely backwards.'
+
+TOPICS THAT PERFORM BEST IN HISTORY SHORTS:
+- Single shocking facts (ancient tech, forgotten inventions, bizarre laws)
+- 'They got it wrong for 100 years' corrections
+- Wild historical coincidences
+- Forgotten people who changed history
+- 'Textbooks skip this part' moments
+- Before/after revelations (how something really started vs. the myth)""",
+        "hook_style": "one raw sentence — the single most shocking or counterintuitive thing about this topic, dropped with no setup. Aim for immediate disbelief: the viewer should think 'wait, that can't be right' in the first two seconds and keep watching to find out if it is",
+        "optimal_minutes": 1,
+        "cpm": "$3-6 (Shorts CPM lower but volume/reach compensates — optimize for replays and shares)",
     },
     "science": {
         "label": "Science & Space",
