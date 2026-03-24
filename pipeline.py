@@ -18,9 +18,9 @@ logger = get_logger(__name__)
 HISTORY_FILE = config.BASE_DIR / "outputs" / "history.json"
 
 QUALITY_TIERS = {
-    "fast":     {"thumbnail_variations": 1, "thumbnail_quality": "standard", "max_clips": 3, "script_humanize": False},
-    "balanced": {"thumbnail_variations": 2, "thumbnail_quality": "standard", "max_clips": 5, "script_humanize": True},
-    "premium":  {"thumbnail_variations": 3, "thumbnail_quality": "hd",       "max_clips": 8, "script_humanize": True},
+    "fast":     {"thumbnail_variations": 1, "thumbnail_quality": "standard", "max_broll_queries": 5,  "clips_per_query": 2, "script_humanize": False},
+    "balanced": {"thumbnail_variations": 2, "thumbnail_quality": "standard", "max_broll_queries": 10, "clips_per_query": 3, "script_humanize": True},
+    "premium":  {"thumbnail_variations": 3, "thumbnail_quality": "hd",       "max_broll_queries": 15, "clips_per_query": 3, "script_humanize": True},
 }
 
 def _load_history():
@@ -92,7 +92,16 @@ def run_pipeline(topic: str, duration_minutes: int = None,
 
     def search_footage_parallel():
         nonlocal footage_result
-        footage_result = _retry(footage.search_footage, topic, per_page=tier["max_clips"])
+        # Parse B-ROLL markers from script for targeted searches
+        broll_queries = footage.parse_broll_markers(script_result.get("script", ""))
+        # Fallback to topic if no markers found
+        if not broll_queries:
+            broll_queries = [topic]
+        broll_queries = broll_queries[:tier["max_broll_queries"]]
+        footage_result = footage.search_footage_multi(
+            broll_queries,
+            clips_per_query=tier["clips_per_query"]
+        )
 
     # Start parallel tasks
     t1 = threading.Thread(target=gen_thumbnail)
@@ -117,11 +126,24 @@ def run_pipeline(topic: str, duration_minutes: int = None,
     # Step 3 — Download clips
     progress(3, "Downloading stock footage clips...")
     clip_paths = []
+    max_clips = tier["max_broll_queries"] * tier["clips_per_query"]
     if footage_result["success"] and footage_result.get("videos"):
-        for i, vid in enumerate(footage_result["videos"][:tier["max_clips"]]):
+        for i, vid in enumerate(footage_result["videos"][:max_clips]):
+            progress(3, f"Downloading clip {i+1} of {min(len(footage_result['videos']), max_clips)}...")
             dl = footage.download_clip(vid["url"], output_filename=f"clip_{niche}_{ts}_{i}.mp4")
             if dl["success"]:
                 clip_paths.append(dl["path"])
+
+    # Extract section labels from script for text overlays
+    import re as _re
+    section_labels = _re.findall(
+        r'\[(?:SECTION \d+|HOOK|INTRO)[^\]]*\]\s*\n.*?\n(.{10,60})',
+        script_result.get("script", ""),
+        _re.DOTALL
+    )
+    # Fallback: grab first sentence of each B-ROLL section
+    if not section_labels:
+        section_labels = []
 
     # Step 4 — Assemble video
     progress(4, "Assembling video (this takes a few minutes)...")
@@ -131,7 +153,8 @@ def run_pipeline(topic: str, duration_minutes: int = None,
         video_result = _retry(video_assembler.assemble_video,
                                vo_result["path"], clip_paths,
                                output_filename=f"video_{niche}_{ts}.mp4",
-                               progress_callback=assembly_progress)
+                               progress_callback=assembly_progress,
+                               section_labels=section_labels)
     else:
         video_result = {"success": False, "error": "No clips downloaded — skipping assembly"}
     result["steps"]["video"] = video_result
