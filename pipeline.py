@@ -56,6 +56,7 @@ def _retry(func, *args, retries=3, **kwargs):
 def run_pipeline(topic: str, duration_minutes: int = None,
                  upload: bool = False, privacy: str = "private",
                  niche: str = "facts", quality_tier: str = "balanced",
+                 format: str = "shorts",
                  progress_callback=None) -> dict:
     """Run the full automation pipeline with niche optimization and quality tiers."""
     tier = QUALITY_TIERS.get(quality_tier, QUALITY_TIERS["balanced"])
@@ -154,7 +155,8 @@ def run_pipeline(topic: str, duration_minutes: int = None,
                                vo_result["path"], clip_paths,
                                output_filename=f"video_{niche}_{ts}.mp4",
                                progress_callback=assembly_progress,
-                               section_labels=section_labels)
+                               section_labels=section_labels,
+                               format=format)
     else:
         video_result = {"success": False, "error": "No clips downloaded — skipping assembly"}
     result["steps"]["video"] = video_result

@@ -118,6 +118,7 @@ def run_pipeline():
 
     niche = request.form.get("niche", "facts")
     quality_tier = request.form.get("quality_tier", "balanced")
+    format = request.form.get("format", "shorts")
 
     job_id = str(uuid.uuid4())
     job = _create_job(job_id)
@@ -134,6 +135,7 @@ def run_pipeline():
             privacy=privacy,
             niche=niche,
             quality_tier=quality_tier,
+            format=format,
             progress_callback=progress,
         )
         with _jobs_lock:
