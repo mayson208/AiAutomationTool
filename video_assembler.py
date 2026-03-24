@@ -4,7 +4,8 @@ from datetime import datetime
 from pathlib import Path
 import config
 
-def assemble_video(voiceover_path: str, clip_paths: list, output_filename: str = None) -> dict:
+def assemble_video(voiceover_path: str, clip_paths: list, output_filename: str = None,
+                   progress_callback=None) -> dict:
     """Combine stock footage clips with a voiceover to create a final video."""
     try:
         from moviepy.editor import (
@@ -14,7 +15,11 @@ def assemble_video(voiceover_path: str, clip_paths: list, output_filename: str =
             return {"success": False, "error": "No video clips provided"}
         if not os.path.exists(voiceover_path):
             return {"success": False, "error": f"Voiceover file not found: {voiceover_path}"}
-        # Load audio to get total duration
+        def _progress(msg):
+            if progress_callback:
+                progress_callback(msg)
+
+        _progress("Loading audio track...")
         audio = AudioFileClip(voiceover_path)
         total_duration = audio.duration
         # Load and resize clips, loop/trim to fill duration
@@ -24,6 +29,7 @@ def assemble_video(voiceover_path: str, clip_paths: list, output_filename: str =
         clip_index = 0
         while time_filled < total_duration:
             clip_path = clip_paths[clip_index % len(clip_paths)]
+            _progress(f"Processing footage clip {clip_index + 1}...")
             clip = VideoFileClip(str(clip_path)).without_audio()
             clip = clip.resize(target_size)
             remaining = total_duration - time_filled
@@ -32,14 +38,14 @@ def assemble_video(voiceover_path: str, clip_paths: list, output_filename: str =
             clips.append(clip)
             time_filled += clip.duration
             clip_index += 1
-        # Concatenate clips
+        _progress("Concatenating clips...")
         final_video = concatenate_videoclips(clips, method="compose")
-        # Set audio
         final_video = final_video.set_audio(audio)
         if not output_filename:
             ts = datetime.now().strftime("%Y%m%d_%H%M%S")
             output_filename = f"video_{ts}.mp4"
-        out_path = config.OUTPUTS_DIR / output_filename
+        out_path = config.VIDEOS_DIR / output_filename
+        _progress("Encoding final video (this takes a few minutes)...")
         final_video.write_videofile(
             str(out_path),
             codec="libx264",

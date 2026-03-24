@@ -6,30 +6,38 @@ from pathlib import Path
 import config
 
 NICHE_THUMBNAIL_STYLES = {
-    "finance": "Professional finance aesthetic. Clean background, bold typography, gold and dark blue color palette. Include visual elements suggesting wealth, charts, or currency. Sharp, trustworthy look.",
-    "motivation": "Bold and energetic. Bright warm colors (orange, yellow, red). Inspirational imagery — mountains, sunrise, person achieving something. High contrast. Empowering feeling.",
-    "facts": "Vibrant and eye-catching. Bright background with a surprising or mind-blowing central image. Bold text space. Use contrast colors. Make it feel like a revelation.",
-    "top10": "List-style aesthetic. Bold numbered styling. Clean, organized. Use bright accent colors. Central compelling image. YouTube red and white color scheme works well.",
-    "truecrime": "Dark, dramatic, high-contrast. Black background with red accents. Crime scene or investigative aesthetic. Shadowy, mysterious. Yellow police tape or crime imagery.",
-    "history": "Cinematic and aged. Sepia tones or dramatic historical colors. Epic scale imagery. Battle scenes, ancient architecture, or dramatic portraits. Documentary feel.",
-    "science": "Space and science aesthetic. Deep blues, purples, cosmic imagery. Stars, galaxies, molecular structures, or futuristic visuals. Sense of wonder and discovery.",
-    "selfimprovement": "Clean and inspiring. Warm tones — amber, cream, sage green. Person succeeding or transforming. Uplifting. Minimalist with clear focal point.",
-    "horror": "Dark and terrifying. Nearly black background. Red accents. Unsettling imagery, shadows, or horror symbols. High contrast. Designed to make viewer feel uneasy.",
-    "meditation": "Serene and peaceful. Soft blues, purples, and whites. Nature elements — water, mountains, clouds. Calming. Soft gradients. No sharp contrasts.",
-    "news": "Professional news aesthetic. Clean, serious. Dark background with bright accent. Map or globe imagery. Professional typography space. Credible and authoritative.",
-    "roblox": "High-energy Roblox gaming thumbnail. Neon and vibrant colors — electric blue, hot pink, bright yellow. Exaggerated shocked or excited expression on an avatar or player. Bold 2-3 word text overlay. Blurred or stylized Roblox game background. Young, energetic, high-CTR style.",
+    "finance": "Dark navy or black background. A single dominant visual — stacks of cash, a graph spiking, or a luxurious item. Bold yellow or gold text overlay in the left or right third, 3-5 words max, creating a curiosity gap (e.g. 'They Lied To You' or 'The $1M Mistake'). High contrast. Looks like it belongs next to Graham Stephan or Andrei Jikh.",
+    "motivation": "Split composition: dramatic dark background on one side, bright warm light breaking through on the other. A silhouette of a person or a powerful lone figure. Bold white or orange text, 2-4 words, placed in high-contrast area. Should feel like a gut punch just from the image alone.",
+    "facts": "Extremely high contrast. One central impossible-looking or mind-bending image that makes no sense at first glance. Bright background (electric blue, hot orange, or lime green). Bold white text with black shadow — a short question or shocking claim (3-5 words). Arrow pointing at the impossible thing. Viewer should think 'wait, what?' before reading a single word.",
+    "top10": "Dark background. A dramatic montage or single shocking central image. Bold numbered text in red or gold. Short teaser text about the #1 entry in white. High energy, organized, looks like it belongs on WatchMojo or MrBeast adjacent channels.",
+    "truecrime": "Almost entirely black. One harsh light source illuminating a face in shadow, a crime scene detail, or a mysterious object. Red accent — one red element only (text, line, or stain). 3-4 white words in uppercase. Deeply unsettling. Viewer feels something is wrong before they read anything.",
+    "history": """Ultra-dramatic ancient scene — ruins, artifacts, or landscapes that look impossibly epic or mysterious.
+    High contrast: rich dark shadows with bright warm highlights (golden hour, torchlight, dramatic sky).
+    Bold white or golden text overlay, max 5 words, creating a burning question or shocking claim — examples: 'HOW DID THEY DO THIS?', 'THIS SHOULDN\\'T EXIST', 'NOBODY CAN EXPLAIN THIS', 'THE TRUTH ABOUT ANCIENT EGYPT'.
+    Text should be large, readable at thumbnail size, placed in a clean area of sky or dark background.
+    The image alone should make someone stop scrolling. Think: National Geographic meets MrBeast clickbait energy.
+    No generic stock photo feel — it must look cinematic, dramatic, and real.""",
+    "science": "Deep space or extreme close-up of something microscopic — the contrast of impossibly large or impossibly small. Dark background (near-black with deep purple or blue glow). One stunning central visual that looks almost fake. White text overlay, 4-5 words, a question or impossible claim. Should feel like the universe just broke.",
+    "selfimprovement": "Split before/after composition, or a single person in a moment of transformation. Clean, warm background (amber, cream). Bold readable text in dark color, 3-5 words, direct address ('You're Doing This Wrong', 'Stop Doing This Now'). Feels personal and urgent without being loud.",
+    "horror": "90% black. One terrifying focal point — a shadowy face, a hand reaching from darkness, an open door with nothing beyond it. A single red accent element. 2-4 uppercase white words. Viewer should feel their stomach drop just looking at it.",
+    "meditation": "Soft, serene. Peaceful nature scene — still water, mountain mist, a single candle in darkness. Soft gradient blues and purples. Gentle white text, lowercase, 4-6 words. No hard edges anywhere. Should feel like exhaling.",
+    "news": "Clean split layout. Map, flag, or key figure on one side. Bold white headline text on dark background on the other side. Professional but urgent. Red breaking news bar optional. Looks credible and important.",
+    "roblox": "Neon explosion — electric blue, hot pink, bright yellow. Central shocked/excited face (avatar or real player). Huge bold text, 2-3 words, all caps. Red arrows or circles highlighting something. High energy chaos that stops a teen mid-scroll.",
 }
 
 NICHE_PROMPTS = {
-    "finance": "A professional YouTube thumbnail for a finance video titled: \"{title}\". {style} Make it look like a top-performing finance channel thumbnail. 16:9 ratio, no borders, no watermarks.",
-    "motivation": "A powerful YouTube thumbnail for a motivational video titled: \"{title}\". {style} Make it feel inspiring and urgent. 16:9 ratio, no borders, no watermarks.",
-    "facts": "An eye-catching YouTube thumbnail for a facts video titled: \"{title}\". {style} It should make people want to click immediately. 16:9 ratio, no borders, no watermarks.",
-    "truecrime": "A dramatic YouTube thumbnail for a true crime video titled: \"{title}\". {style} Make it feel like a true crime documentary thumbnail. 16:9 ratio, no borders, no watermarks.",
-    "history": "A cinematic YouTube thumbnail for a history video titled: \"{title}\". {style} Make it feel epic and documentary-quality. 16:9 ratio, no borders, no watermarks.",
-    "science": "A stunning YouTube thumbnail for a science video titled: \"{title}\". {style} Make it feel like a premium science documentary. 16:9 ratio, no borders, no watermarks.",
-    "horror": "A terrifying YouTube thumbnail for a horror video titled: \"{title}\". {style} Make it feel genuinely unsettling. 16:9 ratio, no borders, no watermarks.",
-    "meditation": "A peaceful YouTube thumbnail for a meditation video titled: \"{title}\". {style} Make it feel deeply calming. 16:9 ratio, no borders, no watermarks.",
-    "roblox": "A high-energy Roblox YouTube thumbnail for a video titled: \"{title}\". {style} Make it look like a viral Roblox channel thumbnail that gets clicked by teens. 16:9 ratio, no borders, no watermarks.",
+    "finance": "A viral YouTube thumbnail for a finance video about: \"{title}\". {style} No borders, no watermarks. 16:9 ratio. This thumbnail must make someone stop scrolling.",
+    "motivation": "A powerful viral YouTube thumbnail for a motivational video about: \"{title}\". {style} No borders, no watermarks. 16:9 ratio. It must create an emotional reaction before they read the title.",
+    "facts": "A viral YouTube thumbnail for a facts video about: \"{title}\". {style} No borders, no watermarks. 16:9 ratio. The thumbnail alone should make someone think 'wait, what?'",
+    "truecrime": "A viral YouTube thumbnail for a true crime video about: \"{title}\". {style} No borders, no watermarks. 16:9 ratio. Must create immediate unease and curiosity.",
+    "history": "A viral YouTube thumbnail for a history video about: \"{title}\". {style} No borders, no watermarks. 16:9 ratio. This must be so visually striking and mysterious that someone scrolling past it CANNOT ignore it.",
+    "science": "A viral YouTube thumbnail for a science video about: \"{title}\". {style} No borders, no watermarks. 16:9 ratio. Must make the viewer feel like reality just broke.",
+    "horror": "A viral YouTube thumbnail for a horror video about: \"{title}\". {style} No borders, no watermarks. 16:9 ratio. Must feel genuinely terrifying at thumbnail size.",
+    "meditation": "A calming YouTube thumbnail for a meditation video about: \"{title}\". {style} No borders, no watermarks. 16:9 ratio.",
+    "news": "A professional urgent YouTube thumbnail for a news video about: \"{title}\". {style} No borders, no watermarks. 16:9 ratio.",
+    "roblox": "A viral Roblox YouTube thumbnail for a video about: \"{title}\". {style} No borders, no watermarks. 16:9 ratio. Must stop a teen mid-scroll.",
+    "top10": "A viral YouTube thumbnail for a top 10 video about: \"{title}\". {style} No borders, no watermarks. 16:9 ratio.",
+    "selfimprovement": "A viral YouTube thumbnail for a self improvement video about: \"{title}\". {style} No borders, no watermarks. 16:9 ratio.",
 }
 
 def _get_prompt(topic: str, title: str, niche: str) -> str:

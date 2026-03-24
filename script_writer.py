@@ -50,9 +50,21 @@ NICHES = {
     },
     "history": {
         "label": "History",
-        "tone": "cinematic, direct, like a documentary narrator who's actually excited",
-        "style": "Open with a shocking historical fact or a scene dropped in mid-action — no 'Throughout history...' or 'In this video we will explore...' Short sentences. Use '...' for dramatic pauses. Say 'nobody knows how they did it' not 'the methodology remains undetermined'. Say 'back then' not 'during that era'. Make the past feel immediate and wild. Connect it to something the viewer can feel — scale, danger, strangeness. Sound like you personally can't believe this is real.",
-        "hook_style": "a jaw-dropping historical fact or scene delivered cold in the first two sentences",
+        "tone": "like a genuinely excited person who actually knows the history and can't believe how wild it is — not a textbook, not a dramatic movie trailer, just a real person being honest about how insane the past was",
+        "style": """Open cold with the most jaw-dropping fact or scene — no intro whatsoever.
+
+The goal is to be THREE things at once: informative (real facts, real context, real history), casual (sounds like a real person talking, never an essay), and exciting (makes the viewer feel genuine wonder or disbelief).
+
+Structure each section like this: drop a wild fact → explain the context behind it in plain language → connect it to something the viewer can visualize or feel → reveal the next wild thing.
+
+Say 'nobody knows how they did it' not 'the methodology remains undetermined'.
+Say 'back then' not 'during that era'.
+Say 'they figured out' not 'scholars determined'.
+Use scale and comparison: 'That's taller than a 20-story building. And they built it without cranes.'
+Use wonder: 'Think about what that actually means...'
+Make the past feel immediate — use present tense descriptions when describing historical scenes.
+Sound like you personally can't believe this is real, because it genuinely is that wild.""",
+        "hook_style": "a jaw-dropping historical fact or scene delivered cold in the first two sentences — something so surprising the viewer HAS to keep watching to understand how it's possible",
         "optimal_minutes": 15,
         "cpm": "$5-10",
     },
@@ -226,8 +238,13 @@ BANNED PHRASES — NEVER USE ANY OF THESE:
 RETENTION RULES (apply throughout):
 - Hook must be a shocking statement or sharp question in the very first sentence — zero setup before it.
 - Pattern interrupt every 90-120 seconds: shift angle, ask a sharp question, reveal a surprise.
-- Curiosity gap: start explaining something, pause with "...", continue after B-roll note.
+- Curiosity gap: start explaining something, pause with "...", then reveal after a B-roll beat.
 - Every section transition must tease what's next — never end a section flat.
+
+VISUAL ALIGNMENT — CRITICAL:
+Every paragraph of narration must have a [B-ROLL: ...] marker BEFORE it describing exactly what footage should be on screen while that narration plays. The B-roll description must match what is being said — if you're talking about ancient stone tools, the B-roll should be stone tools or hands carving stone. If you're describing a river valley, show a river valley. The viewer should always be SEEING what you're SAYING.
+
+Write the B-roll description as a specific, searchable footage query (e.g., "aerial drone shot over ancient ruins at sunset", "close-up of carved stone hieroglyphs", "wide shot of desert landscape with pyramids in background").
 
 FORMAT (use exactly these labels):
 TITLE: [YouTube title with number or power word, 60 chars max]
@@ -236,20 +253,24 @@ TAGS: [15 comma-separated tags]
 
 SCRIPT:
 [HOOK - 0:00]
-[hook content]
+[B-ROLL: specific footage description matching the opening visual]
+[hook narration]
 
 [SECTION 1 - timestamp]
-[content with [B-ROLL: description] markers]
+[B-ROLL: specific footage matching what is being described]
+[narration paragraph — 3-5 sentences]
+[B-ROLL: next specific footage as the topic shifts]
+[narration paragraph — 3-5 sentences]
 
-[continue sections...]
+[continue — every paragraph gets its own B-ROLL marker above it...]
 
 [CTA - timestamp]
-[like, comment, subscribe — keep it brief and natural, not formal]
+[B-ROLL: wide cinematic shot or relevant ending visual]
+[like, comment, subscribe — brief and natural, one or two sentences]
 
 [OUTRO - timestamp]
-[closing — one punchy line, not a summary]
-
-Include [B-ROLL: description] markers every 45-90 seconds of narration."""
+[B-ROLL: final cinematic shot]
+[closing — one punchy line that makes them think, not a summary]"""
 
         message = client.messages.create(
             model=config.CLAUDE_MODEL,

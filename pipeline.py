@@ -124,11 +124,14 @@ def run_pipeline(topic: str, duration_minutes: int = None,
                 clip_paths.append(dl["path"])
 
     # Step 4 — Assemble video
-    progress(4, "Assembling video...")
+    progress(4, "Assembling video (this takes a few minutes)...")
     if clip_paths:
+        def assembly_progress(msg):
+            progress(4, f"Assembling: {msg}")
         video_result = _retry(video_assembler.assemble_video,
                                vo_result["path"], clip_paths,
-                               output_filename=f"video_{niche}_{ts}.mp4")
+                               output_filename=f"video_{niche}_{ts}.mp4",
+                               progress_callback=assembly_progress)
     else:
         video_result = {"success": False, "error": "No clips downloaded — skipping assembly"}
     result["steps"]["video"] = video_result

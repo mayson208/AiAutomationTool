@@ -93,7 +93,7 @@ def fetch_voices_from_elevenlabs() -> dict:
                 "description": v.get("description", ""),
                 "preview_url": v.get("preview_url", ""),
                 "fine_tuning_state": v.get("fine_tuning", {}).get("state", ""),
-                "is_new": v.get("created_at_unix", 0) > 0,  # mark as potentially new
+                "is_new": (v.get("created_at_unix") or 0) > 0,  # mark as potentially new
                 "languages": [lang.get("language", "") for lang in v.get("verified_languages", [])],
                 "default_settings": {
                     "stability":       settings.get("stability", 0.5),

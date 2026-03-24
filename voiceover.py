@@ -7,6 +7,27 @@ from datetime import datetime
 from pathlib import Path
 import config
 
+CHUNK_SIZE = 9000  # ElevenLabs limit is 10000 — stay safely under
+
+def _split_text(text: str, max_chars: int = CHUNK_SIZE) -> list:
+    """Split text into chunks at sentence boundaries."""
+    sentences = re.split(r'(?<=[.!?])\s+', text)
+    chunks, current = [], ""
+    for sentence in sentences:
+        if len(current) + len(sentence) + 1 <= max_chars:
+            current = (current + " " + sentence).strip()
+        else:
+            if current:
+                chunks.append(current)
+            # If single sentence is too long, hard-split it
+            while len(sentence) > max_chars:
+                chunks.append(sentence[:max_chars])
+                sentence = sentence[max_chars:]
+            current = sentence
+    if current:
+        chunks.append(current)
+    return chunks
+
 NICHE_VOICE_SETTINGS = {
     "finance":       {"stability": 0.70, "similarity_boost": 0.80, "style": 0.20, "use_speaker_boost": True},
     "motivation":    {"stability": 0.40, "similarity_boost": 0.70, "style": 0.60, "use_speaker_boost": True},
@@ -73,12 +94,18 @@ def generate_voiceover(script_text: str, output_filename: str = None,
             "voice_settings": voice_settings,
         }
 
-        response = requests.post(url, json=payload, headers=headers, timeout=120)
-        response.raise_for_status()
+        chunks = _split_text(clean_text)
+        audio_parts = []
+        for i, chunk in enumerate(chunks):
+            payload["text"] = chunk
+            response = requests.post(url, json=payload, headers=headers, timeout=120)
+            response.raise_for_status()
+            audio_parts.append(response.content)
 
         out_path = audio_dir / output_filename
         with open(out_path, "wb") as f:
-            f.write(response.content)
+            for part in audio_parts:
+                f.write(part)
 
         file_size = os.path.getsize(out_path)
 
