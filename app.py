@@ -158,7 +158,7 @@ def pipeline_progress(job_id):
         q = job["queue"]
         while True:
             try:
-                item = q.get(timeout=60)
+                item = q.get(timeout=15)
             except queue.Empty:
                 yield 'data: {"ping": true}\n\n'
                 continue
@@ -604,4 +604,5 @@ def get_active_voice_api():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    # use_reloader=False — prevents Flask from restarting mid-pipeline and killing threads
+    app.run(debug=True, use_reloader=False, port=5000)

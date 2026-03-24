@@ -206,50 +206,65 @@ document.getElementById('pipelineForm').addEventListener('submit', function() {
   progressCard.style.display = 'block';
   if (runBtn) { runBtn.disabled = true; runBtn.textContent = 'Running...'; }
 
-  const es = new EventSource('/pipeline/progress/' + jobId);
+  let es = null;
+  let reconnectAttempts = 0;
+  const MAX_RECONNECTS = 30;  // keep trying for ~5 minutes
+  let lastStep = 0, lastTotal = 6, lastMsg = '';
 
-  es.onmessage = function(e) {
-    const data = JSON.parse(e.data);
+  function connect() {
+    if (es) { try { es.close(); } catch(e) {} }
+    es = new EventSource('/pipeline/progress/' + jobId);
 
-    if (data.ping) return;
+    es.onmessage = function(e) {
+      const data = JSON.parse(e.data);
+      reconnectAttempts = 0;  // reset on successful message
 
-    if (data.done) {
+      if (data.ping) return;
+
+      if (data.done) {
+        es.close();
+        if (data.success) {
+          progressMsg.textContent = '✓ Pipeline complete! Reloading...';
+          progressBar.style.width = '100%';
+          setTimeout(function() { window.location.href = '/'; }, 1500);
+        } else {
+          progressMsg.textContent = '✗ Pipeline failed: ' + (data.error || 'Unknown error');
+          progressBar.style.backgroundColor = '#c00';
+          if (runBtn) { runBtn.disabled = false; runBtn.textContent = '⚡ Generate Video'; }
+        }
+        return;
+      }
+
+      lastStep = data.step || 0;
+      lastTotal = data.total || 6;
+      lastMsg = data.msg || '';
+
+      progressMsg.textContent = lastMsg;
+      progressBar.style.width = ((lastStep / lastTotal) * 100) + '%';
+
+      steps.forEach(function(s, i) {
+        if (i < lastStep - 1) {
+          s.classList.remove('active');
+          s.classList.add('done');
+        } else if (i === lastStep - 1) {
+          s.classList.add('active');
+        }
+      });
+    };
+
+    es.onerror = function() {
       es.close();
-      if (data.success) {
-        progressMsg.textContent = '✓ Pipeline complete! Reloading...';
-        progressBar.style.width = '100%';
-        // Small delay then reload to show result
-        setTimeout(function() { window.location.href = '/'; }, 1500);
+      reconnectAttempts++;
+      if (reconnectAttempts <= MAX_RECONNECTS) {
+        progressMsg.textContent = (lastMsg || 'Running...') + ' (reconnecting ' + reconnectAttempts + '/' + MAX_RECONNECTS + ')';
+        setTimeout(connect, 3000);
       } else {
-        progressMsg.textContent = '✗ Pipeline failed: ' + (data.error || 'Unknown error');
-        progressBar.style.backgroundColor = '#c00';
-        if (runBtn) { runBtn.disabled = false; runBtn.textContent = '⚡ Generate Video'; }
+        progressMsg.textContent = 'Connection lost — pipeline may still be running. Refresh to check.';
       }
-      return;
-    }
+    };
+  }
 
-    // Step progress
-    const step = data.step || 0;
-    const total = data.total || 6;
-    const msg = data.msg || '';
-
-    progressMsg.textContent = msg;
-    progressBar.style.width = ((step / total) * 100) + '%';
-
-    steps.forEach(function(s, i) {
-      if (i < step - 1) {
-        s.classList.remove('active');
-        s.classList.add('done');
-      } else if (i === step - 1) {
-        s.classList.add('active');
-      }
-    });
-  };
-
-  es.onerror = function() {
-    es.close();
-    progressMsg.textContent = 'Connection lost. Refresh to check status.';
-  };
+  connect();
 })();
 </script>
 {% endblock %}
