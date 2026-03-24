@@ -191,7 +191,7 @@ document.getElementById('pipelineForm').addEventListener('submit', function() {
   document.getElementById('runBtn').textContent = 'Running...';
 });
 
-// SSE real-time progress if job_id is in the URL
+// Polling-based progress — reads from disk, survives Flask restarts
 (function() {
   const params = new URLSearchParams(window.location.search);
   const jobId = params.get('job');
@@ -206,65 +206,49 @@ document.getElementById('pipelineForm').addEventListener('submit', function() {
   progressCard.style.display = 'block';
   if (runBtn) { runBtn.disabled = true; runBtn.textContent = 'Running...'; }
 
-  let es = null;
-  let reconnectAttempts = 0;
-  const MAX_RECONNECTS = 30;  // keep trying for ~5 minutes
-  let lastStep = 0, lastTotal = 6, lastMsg = '';
+  let pollTimer = null;
+  let missedPolls = 0;
 
-  function connect() {
-    if (es) { try { es.close(); } catch(e) {} }
-    es = new EventSource('/pipeline/progress/' + jobId);
+  function poll() {
+    fetch('/pipeline/status/' + jobId)
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        missedPolls = 0;
 
-    es.onmessage = function(e) {
-      const data = JSON.parse(e.data);
-      reconnectAttempts = 0;  // reset on successful message
-
-      if (data.ping) return;
-
-      if (data.done) {
-        es.close();
-        if (data.success) {
-          progressMsg.textContent = '✓ Pipeline complete! Reloading...';
-          progressBar.style.width = '100%';
-          setTimeout(function() { window.location.href = '/'; }, 1500);
-        } else {
-          progressMsg.textContent = '✗ Pipeline failed: ' + (data.error || 'Unknown error');
-          progressBar.style.backgroundColor = '#c00';
-          if (runBtn) { runBtn.disabled = false; runBtn.textContent = '⚡ Generate Video'; }
+        if (data.done) {
+          clearInterval(pollTimer);
+          if (data.success) {
+            progressMsg.textContent = '✓ Pipeline complete! Reloading...';
+            progressBar.style.width = '100%';
+            setTimeout(function() { window.location.href = '/'; }, 1500);
+          } else {
+            progressMsg.textContent = '✗ Failed: ' + (data.error || 'Unknown error');
+            progressBar.style.backgroundColor = '#c00';
+            if (runBtn) { runBtn.disabled = false; runBtn.textContent = '⚡ Generate Video'; }
+          }
+          return;
         }
-        return;
-      }
 
-      lastStep = data.step || 0;
-      lastTotal = data.total || 6;
-      lastMsg = data.msg || '';
+        const step = data.step || 0;
+        const total = data.total || 6;
+        const msg = data.msg || 'Running...';
 
-      progressMsg.textContent = lastMsg;
-      progressBar.style.width = ((lastStep / lastTotal) * 100) + '%';
+        progressMsg.textContent = msg;
+        progressBar.style.width = ((step / total) * 100) + '%';
 
-      steps.forEach(function(s, i) {
-        if (i < lastStep - 1) {
-          s.classList.remove('active');
-          s.classList.add('done');
-        } else if (i === lastStep - 1) {
-          s.classList.add('active');
-        }
+        steps.forEach(function(s, i) {
+          if (i < step - 1) { s.classList.remove('active'); s.classList.add('done'); }
+          else if (i === step - 1) { s.classList.add('active'); }
+        });
+      })
+      .catch(function() {
+        missedPolls++;
+        progressMsg.textContent = 'Pipeline running... (server busy, retrying ' + missedPolls + ')';
       });
-    };
-
-    es.onerror = function() {
-      es.close();
-      reconnectAttempts++;
-      if (reconnectAttempts <= MAX_RECONNECTS) {
-        progressMsg.textContent = (lastMsg || 'Running...') + ' (reconnecting ' + reconnectAttempts + '/' + MAX_RECONNECTS + ')';
-        setTimeout(connect, 3000);
-      } else {
-        progressMsg.textContent = 'Connection lost — pipeline may still be running. Refresh to check.';
-      }
-    };
   }
 
-  connect();
+  poll(); // immediate first poll
+  pollTimer = setInterval(poll, 3000); // then every 3 seconds
 })();
 </script>
 {% endblock %}

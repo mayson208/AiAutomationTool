@@ -58,9 +58,42 @@ def health():
         "flask_secret_safe": config.FLASK_SECRET_KEY != "dev-secret-key",
     })
 
-# ── Job store for SSE progress ─────────────────────────────────────────────────
+# ── Job store — disk-backed so it survives Flask restarts ─────────────────────
+_JOBS_DIR = Path(__file__).parent / "outputs" / "jobs"
+_JOBS_DIR.mkdir(parents=True, exist_ok=True)
+
 _jobs: dict = {}  # job_id -> {"queue": Queue, "result": dict|None, "done": bool}
 _jobs_lock = threading.Lock()
+
+
+def _job_file(job_id: str) -> Path:
+    return _JOBS_DIR / f"{job_id}.json"
+
+
+def _write_job_status(job_id: str, step: int, total: int, msg: str,
+                      done: bool = False, success: bool = False,
+                      error: str = "", title: str = ""):
+    """Write job progress to disk so polling survives Flask restarts."""
+    try:
+        with open(_job_file(job_id), "w") as f:
+            json.dump({
+                "job_id": job_id, "step": step, "total": total,
+                "msg": msg, "done": done, "success": success,
+                "error": error, "title": title,
+            }, f)
+    except Exception:
+        pass
+
+
+def _read_job_status(job_id: str) -> dict:
+    p = _job_file(job_id)
+    if p.exists():
+        try:
+            with open(p) as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {}
 
 
 def _get_job(job_id):
@@ -71,6 +104,7 @@ def _get_job(job_id):
 def _create_job(job_id):
     with _jobs_lock:
         _jobs[job_id] = {"queue": queue.Queue(), "result": None, "done": False}
+    _write_job_status(job_id, 0, 6, "Starting pipeline...")
     return _jobs[job_id]
 
 
@@ -127,6 +161,7 @@ def run_pipeline():
     def run():
         def progress(step, total, msg):
             q.put({"step": step, "total": total, "msg": msg})
+            _write_job_status(job_id, step, total, msg)  # persist to disk
 
         result = pipe.run_pipeline(
             topic,
@@ -141,10 +176,28 @@ def run_pipeline():
         with _jobs_lock:
             _jobs[job_id]["result"] = result
             _jobs[job_id]["done"] = True
-        q.put(None)  # sentinel — signals completion
+        # Write final status to disk
+        _write_job_status(
+            job_id, 6, 6,
+            "Pipeline complete!" if result.get("success") else result.get("error", "Failed"),
+            done=True,
+            success=result.get("success", False),
+            error=result.get("error", ""),
+            title=result.get("title", ""),
+        )
+        q.put(None)  # sentinel
 
     threading.Thread(target=run, daemon=True).start()
     return redirect(url_for("index", job=job_id))
+
+
+@app.route("/pipeline/status/<job_id>")
+def pipeline_status(job_id):
+    """Polling endpoint — reads from disk, survives Flask restarts."""
+    status = _read_job_status(job_id)
+    if not status:
+        return jsonify({"error": "Job not found", "done": False, "step": 0, "total": 6, "msg": "Waiting..."})
+    return jsonify(status)
 
 
 @app.route("/pipeline/progress/<job_id>")
