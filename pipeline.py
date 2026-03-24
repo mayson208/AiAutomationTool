@@ -61,6 +61,12 @@ def run_pipeline(topic: str, duration_minutes: int = None,
     """Run the full automation pipeline with niche optimization and quality tiers."""
     tier = QUALITY_TIERS.get(quality_tier, QUALITY_TIERS["balanced"])
 
+    # Shorts format: cap duration at 1 minute and use faster clip tier
+    if niche == "history_short" and duration_minutes is None:
+        duration_minutes = 1
+    if format == "shorts" and quality_tier == "balanced":
+        tier = {**tier, "clips_per_query": 2}  # fewer clips — shorts only need 15-20 total
+
     def progress(step, msg):
         if progress_callback:
             progress_callback(step, 6, msg)

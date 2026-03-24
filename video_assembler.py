@@ -7,18 +7,24 @@ import config
 
 TARGET_W = 1080
 TARGET_H = 1920
-CLIP_MIN_DURATION = 4
-CLIP_MAX_DURATION = 8
-CROSSFADE_DURATION = 0.4
+CLIP_MIN_DURATION = 2     # research: b-roll clips 1.5-2.5s for Shorts pacing
+CLIP_MAX_DURATION = 4
+CROSSFADE_DURATION = 0.3
 KEN_BURNS_ZOOM = 0.05
 
-# Caption settings
-CAPTION_FONTSIZE = 72
-CAPTION_WORDS_PER_GROUP = 3
-CAPTION_Y_RATIO = 0.72   # vertical position (fraction of height)
+# Caption settings — tuned to viral Shorts specs
+CAPTION_FONTSIZE = 76
+CAPTION_WORDS_PER_GROUP = 4          # research: 4-6 words per caption group
+CAPTION_Y_RATIO = 0.68               # center third, avoid bottom 25%
+CAPTION_PRE_ROLL = 0.15             # appear 0.15s before audio word (feels snappier)
+CAPTION_BG_OPACITY = 160            # semi-transparent black box (0-255)
 CAPTION_COLOR = (255, 255, 255)
 CAPTION_SHADOW_COLOR = (0, 0, 0)
 CAPTION_HIGHLIGHT_COLOR = (255, 220, 50)   # yellow for active word
+
+# Color grading — research: +10-15% saturation, slight contrast for scroll environment
+COLOR_SATURATION_BOOST = 1.15
+COLOR_CONTRAST_BOOST = 1.08
 
 
 def _apply_ken_burns(clip, zoom_in=True):
@@ -92,7 +98,7 @@ def _group_words(words: list, group_size: int = CAPTION_WORDS_PER_GROUP) -> list
 
 
 def _render_caption_frame(text: str, size: tuple, active_word: str = None) -> "np.ndarray | None":
-    """Render a single caption frame with bold white text + thick black outline."""
+    """Render a caption frame: semi-transparent BG box + bold white text + outline."""
     try:
         from PIL import Image, ImageDraw, ImageFont
         import numpy as np
@@ -129,10 +135,32 @@ def _render_caption_frame(text: str, size: tuple, active_word: str = None) -> "n
         if line:
             lines.append(" ".join(line))
 
-        line_h = fontsize + 12
+        line_h = fontsize + 16
+        pad_x, pad_y = 24, 14
         total_h = len(lines) * line_h
         y_center = int(h * CAPTION_Y_RATIO)
         y_start = y_center - total_h // 2
+
+        # Measure block width for background box
+        max_tw = max(
+            (draw.textbbox((0, 0), ln, font=font)[2] - draw.textbbox((0, 0), ln, font=font)[0])
+            for ln in lines
+        )
+        box_x1 = w // 2 - max_tw // 2 - pad_x
+        box_y1 = y_start - pad_y
+        box_x2 = w // 2 + max_tw // 2 + pad_x
+        box_y2 = y_start + total_h + pad_y
+
+        # Draw semi-transparent background box
+        box_layer = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+        box_draw = ImageDraw.Draw(box_layer)
+        box_draw.rounded_rectangle(
+            [box_x1, box_y1, box_x2, box_y2],
+            radius=12,
+            fill=(0, 0, 0, CAPTION_BG_OPACITY),
+        )
+        img = Image.alpha_composite(img, box_layer)
+        draw = ImageDraw.Draw(img)
 
         for i, line_text in enumerate(lines):
             bbox = draw.textbbox((0, 0), line_text, font=font)
@@ -140,24 +168,23 @@ def _render_caption_frame(text: str, size: tuple, active_word: str = None) -> "n
             x = (w - tw) // 2
             y = y_start + i * line_h
 
-            # Thick black outline (draw 8 directions)
-            outline = 4
-            for dx in range(-outline, outline + 1):
-                for dy in range(-outline, outline + 1):
+            # Thin outline for extra crispness
+            outline = 3
+            for dx in range(-outline, outline + 1, outline):
+                for dy in range(-outline, outline + 1, outline):
                     if dx == 0 and dy == 0:
                         continue
                     draw.text((x + dx, y + dy), line_text, font=font, fill=(0, 0, 0, 255))
 
-            # White text (highlight active word in yellow if applicable)
+            # White text with optional yellow highlight on active word
             if active_word and active_word.strip().lower() in line_text.lower():
-                # Draw each word, highlight the active one
                 cur_x = x
                 for word in line_text.split():
                     wb = draw.textbbox((0, 0), word, font=font)
                     ww = wb[2] - wb[0]
                     color = CAPTION_HIGHLIGHT_COLOR if word.strip().strip(".,!?").lower() == active_word.strip(".,!?").lower() else CAPTION_COLOR
                     draw.text((cur_x, y), word, font=font, fill=color + (255,))
-                    cur_x += ww + int(fontsize * 0.25)
+                    cur_x += ww + int(fontsize * 0.22)
             else:
                 draw.text((x, y), line_text, font=font, fill=CAPTION_COLOR + (255,))
 
@@ -172,7 +199,8 @@ def _make_caption_clips(word_groups: list, video_size: tuple, total_duration: fl
         from moviepy.editor import ImageClip
         clips = []
         for group in word_groups:
-            start = group["start"]
+            # Pre-roll: show caption slightly before word is spoken
+            start = max(0.0, group["start"] - CAPTION_PRE_ROLL)
             end = min(group["end"], total_duration - 0.1)
             if end <= start or start >= total_duration:
                 continue
@@ -293,6 +321,21 @@ def assemble_video(voiceover_path: str, clip_paths: list, output_filename: str =
                         width=TARGET_W,
                         height=TARGET_H,
                     )
+            except Exception:
+                pass
+
+            # Color grade — boost saturation + contrast for scroll environment
+            try:
+                import numpy as np
+                from PIL import Image, ImageEnhance
+
+                def _color_grade(frame):
+                    pil = Image.fromarray(frame)
+                    pil = ImageEnhance.Color(pil).enhance(COLOR_SATURATION_BOOST)
+                    pil = ImageEnhance.Contrast(pil).enhance(COLOR_CONTRAST_BOOST)
+                    return np.array(pil)
+
+                clipped = clipped.fl_image(_color_grade)
             except Exception:
                 pass
 

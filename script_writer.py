@@ -68,47 +68,55 @@ Sound like you personally can't believe this is real, because it genuinely is th
 Every 90-120 seconds add a pattern interrupt — shift the angle, ask a sharp question, or drop a surprise before continuing.
 End sections with a teaser for what comes next — never let a section land flat.
 Use curiosity gaps: start a revelation, pause with '...', then land the payoff after a beat.""",
-        "hook_style": "a jaw-dropping historical fact or scene delivered cold in the first two sentences — something so surprising the viewer HAS to keep watching to understand how it's possible. Best formulas: 'Did you know...' with a genuinely shocking fact, 'Everything you learned about X is wrong', or drop into a dramatic scene mid-action with no setup",
+        "hook_style": "drop cold into the single most shocking moment — no intro. Use one of these formulas: drop mid-scene ('It's [year]. [Something unexpected happening].'), counterintuitive reversal ('[Common belief]. That's completely backwards.'), scale shock ('[ancient thing] was [modern comparison] — built without [modern tool]'), or personal stakes ('This man had 48 hours to [action] before [consequence].')",
         "optimal_minutes": 15,
         "cpm": "$5-10",
     },
     "history_short": {
         "label": "History Shorts (60-Second Format)",
-        "tone": "urgent, punchy, and genuinely amazed — like you're texting a friend something insane you just found out and you only have 60 seconds to tell them before they have to leave",
-        "style": """This is a YouTube Short. The entire video is 45-60 seconds. Every single word has to earn its place.
+        "tone": "urgent, punchy, genuinely amazed — like you're about to tell a friend the wildest thing you just found out and you only have 60 seconds before they have to leave",
+        "style": """This is a YouTube Short / TikTok. Vertical format. 45-60 seconds. Every single word earns its place.
 
-STRUCTURE (strictly follow this):
-- Hook (0-3s): One sentence. Drop the most shocking or counterintuitive fact raw — no setup, no 'Did you know', just the statement. Make them need to know how that's possible.
-- Curiosity builder (3-15s): One or two sentences of context that deepen the mystery rather than solve it. Make it weirder before you explain it.
-- Micro-lesson (15-45s): The single most interesting thing about this topic explained simply. One fact, one insight, one story beat. Never try to cover multiple things.
-- Satisfying close / loop (45-60s): End with a callback to the opening hook or a gut-punch one-liner that makes the whole thing click. Ideally the ending makes the viewer want to watch again from the start (loop structure).
+6-PART PRODUCTION STRUCTURE (follow this exactly):
+1. VISUAL HOOK (0-2s): The most dramatic or visually striking moment — described in [B-ROLL] marker. This is what stops the scroll.
+2. SPOKEN HOOK (0-3s): One raw sentence. Drop the most shocking or counterintuitive fact cold — no setup, no 'Did you know', no intro. Just the statement. Viewer thinks: 'wait, that can't be right.'
+3. DEEPENING (3-15s): One or two sentences that make it MORE mysterious, not less. Deepen the disbelief before explaining anything.
+4. THE REVEAL (15-45s): The single most interesting fact, story beat, or insight — explained simply and fast. One thing only. No branching.
+5. GUT-PUNCH CLOSE (45-55s): One line that recontextualizes everything above — a twist, a callback, or a statistic that makes the jaw drop.
+6. LOOP POINT (55-60s): The final frame or line should naturally lead back to the opening — engineer the ending so viewers want to replay. Ideally the last word/image echoes the first.
+
+LOOP ENGINEERING — THIS IS CRITICAL:
+- Write the ending FIRST, then write the opening to mirror it.
+- The last line should create a question or tension that the first line answers.
+- Do NOT use a CTA — it breaks the loop and kills replays.
+- No 'Like and subscribe.' No 'Follow for more.' The loop IS the call to action.
 
 RULES:
-- Single topic. One fact or story. No branching.
-- 80-120 words total. Count every word.
-- Short punchy sentences — 5-10 words max per sentence.
-- Contractions everywhere. 'It didn't' not 'it did not'. 'They couldn't' not 'they could not'.
-- No filler: cut 'basically', 'actually', 'essentially', 'as we know'.
-- No CTA longer than one word ('Subscribe.' or nothing). Long CTAs kill the loop.
-- No '[B-ROLL]' section headers needed — just write the narration cleanly.
+- 110-135 words total. Count every word.
+- Single topic. One fact or story arc. No branching.
+- Sentences: 5-10 words max. One thought per sentence.
+- Contractions everywhere: didn't, couldn't, they're, it's.
+- No filler: cut 'basically', 'actually', 'essentially', 'remember'.
 - Present tense for historical scenes: 'It's 1347. A ship pulls into port...'
-- Use '...' for micro-pauses where the weird stuff should land.
+- '...' for micro-pauses before reveals.
+- Every paragraph gets a [B-ROLL: specific searchable footage query] marker ABOVE it — footage must match what's being said.
 
-BEST HOOK FORMULAS FOR HISTORY SHORTS:
-- 'Did you know [shocking historical fact most people have never heard]?'
-- 'Everything you learned about [X] is wrong.'
-- 'Nobody talks about [the wildest part of this event].'
-- Drop into a scene cold: 'It's [year]. [Something unexpected is happening].'
-- Counterintuitive reversal: '[Common belief]. But that's completely backwards.'
+PROVEN VIRAL HOOK FORMULAS (pick the strongest for this topic):
+- Drop cold into a scene: 'It's [year]. [Something unexpected is happening].'
+- Counterintuitive reversal: '[Common belief]. That's completely backwards.'
+- Scale shock: '[Ancient thing] was [modern comparison] — built without [modern tool].'
+- Forgotten history: 'Nobody talks about what happened [before/after the famous event].'
+- Personal stakes: 'This man had 48 hours to [action] before [consequence].'
+- Modern mirror: '[Ancient civilization] figured out [modern concept] [X] years before we did.'
 
-TOPICS THAT PERFORM BEST IN HISTORY SHORTS:
+TOPICS THAT PERFORM BEST:
 - Single shocking facts (ancient tech, forgotten inventions, bizarre laws)
 - 'They got it wrong for 100 years' corrections
 - Wild historical coincidences
 - Forgotten people who changed history
 - 'Textbooks skip this part' moments
-- Before/after revelations (how something really started vs. the myth)""",
-        "hook_style": "one raw sentence — the single most shocking or counterintuitive thing about this topic, dropped with no setup. Aim for immediate disbelief: the viewer should think 'wait, that can't be right' in the first two seconds and keep watching to find out if it is",
+- Events that feel eerily modern""",
+        "hook_style": "one raw sentence — the single most shocking or counterintuitive thing about this topic, no setup. Viewer thinks 'wait, that can't be right' in the first 2 seconds.",
         "optimal_minutes": 1,
         "cpm": "$3-6 (Shorts CPM lower but volume/reach compensates — optimize for replays and shares)",
     },
