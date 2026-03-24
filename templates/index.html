@@ -23,12 +23,21 @@
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label for="duration">Duration (minutes)</label>
+        <label for="duration">Duration</label>
         <select id="duration" name="duration" class="form-select">
-          <option value="5">5 minutes</option>
-          <option value="8" selected>8 minutes</option>
-          <option value="10">10 minutes</option>
-          <option value="15">15 minutes</option>
+          <optgroup label="— Shorts / TikTok —">
+            <option value="0.5">30 seconds</option>
+            <option value="0.75">45 seconds</option>
+            <option value="1" selected>1 minute</option>
+          </optgroup>
+          <optgroup label="— Long-form —">
+            <option value="5">5 minutes</option>
+            <option value="8">8 minutes</option>
+            <option value="10">10 minutes</option>
+            <option value="15">15 minutes</option>
+            <option value="20">20 minutes</option>
+            <option value="30">30 minutes</option>
+          </optgroup>
         </select>
       </div>
       <div class="form-group">
@@ -43,19 +52,25 @@
     <div class="form-row">
       <div class="form-group">
         <label>Niche <span style="color:var(--text-muted);font-size:11px">(optimizes all settings)</span></label>
-        <select name="niche" class="form-select">
-          <option value="finance">Finance & Investing</option>
-          <option value="motivation">Motivational & Quotes</option>
-          <option value="facts" selected>Facts / Did You Know</option>
-          <option value="top10">Top 10 Lists</option>
-          <option value="truecrime">True Crime</option>
-          <option value="history">History</option>
-          <option value="science">Science & Space</option>
-          <option value="selfimprovement">Self Improvement</option>
-          <option value="horror">Horror & Scary Stories</option>
-          <option value="meditation">Meditation & Sleep</option>
-          <option value="news">News Summary</option>
-          <option value="roblox">Roblox Gaming</option>
+        <select name="niche" id="nicheSelect" class="form-select">
+          <optgroup label="— Shorts Optimized —">
+            <option value="history_short">&#128081; History Short (60s)</option>
+            <option value="face_reconstruction">&#129504; Face Reconstruction (RelaxHistoryAI)</option>
+            <option value="facts">&#129300; Facts / Did You Know</option>
+          </optgroup>
+          <optgroup label="— Long-form —">
+            <option value="history">&#127981; History (Long-form)</option>
+            <option value="finance">&#128176; Finance & Investing</option>
+            <option value="motivation">&#128293; Motivational & Quotes</option>
+            <option value="top10">&#127942; Top 10 Lists</option>
+            <option value="truecrime">&#128373; True Crime</option>
+            <option value="science">&#128301; Science & Space</option>
+            <option value="selfimprovement">&#127945; Self Improvement</option>
+            <option value="horror">&#128123; Horror & Scary Stories</option>
+            <option value="meditation">&#129505; Meditation & Sleep</option>
+            <option value="news">&#128240; News Summary</option>
+            <option value="roblox">&#127918; Roblox Gaming</option>
+          </optgroup>
         </select>
       </div>
       <div class="form-group">
@@ -68,7 +83,7 @@
       </div>
       <div class="form-group">
         <label>Format</label>
-        <select name="format" class="form-select">
+        <select name="format" id="formatSelect" class="form-select">
           <option value="shorts" selected>&#128247; Shorts / TikTok (1080×1920)</option>
           <option value="landscape">&#127916; Landscape (1920×1080)</option>
         </select>
@@ -137,6 +152,38 @@
 
 {% block scripts %}
 <script>
+// Auto-sync niche → duration + format
+(function() {
+  const SHORTS_NICHES = ['history_short', 'face_reconstruction', 'facts'];
+  const nicheSelect   = document.getElementById('nicheSelect');
+  const durationSel   = document.getElementById('duration');
+  const formatSel     = document.getElementById('formatSelect');
+
+  const NICHE_DEFAULTS = {
+    'history_short':      { duration: '1',  format: 'shorts' },
+    'face_reconstruction':{ duration: '1',  format: 'shorts' },
+    'facts':              { duration: '1',  format: 'shorts' },
+    'history':            { duration: '15', format: 'landscape' },
+    'finance':            { duration: '12', format: 'landscape' },
+    'motivation':         { duration: '6',  format: 'landscape' },
+    'top10':              { duration: '10', format: 'landscape' },
+    'truecrime':          { duration: '20', format: 'landscape' },
+    'science':            { duration: '10', format: 'landscape' },
+    'selfimprovement':    { duration: '10', format: 'landscape' },
+    'horror':             { duration: '15', format: 'landscape' },
+    'meditation':         { duration: '30', format: 'landscape' },
+    'news':               { duration: '7',  format: 'landscape' },
+    'roblox':             { duration: '12', format: 'landscape' },
+  };
+
+  nicheSelect.addEventListener('change', function() {
+    const defaults = NICHE_DEFAULTS[this.value];
+    if (!defaults) return;
+    durationSel.value = defaults.duration;
+    formatSel.value   = defaults.format;
+  });
+})();
+
 // Disable button + show progress card on form submit
 document.getElementById('pipelineForm').addEventListener('submit', function() {
   document.getElementById('progressCard').style.display = 'block';

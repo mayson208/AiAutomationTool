@@ -314,7 +314,7 @@ def generate_script(topic: str, duration_minutes: int = None, niche: str = "fact
 Niche: {niche_info['label']}
 Tone: {niche_info['tone']}
 Style guidelines: {niche_info['style']}
-Target length: {duration_minutes} minutes (~{duration_minutes * 150} words of spoken narration)
+Target length: {duration_minutes} minutes (~{int(duration_minutes * 150)} words of spoken narration)
 {hook_instruction}
 
 VOICE AND STYLE — NON-NEGOTIABLE:

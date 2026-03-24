@@ -103,7 +103,7 @@ def index():
 def run_pipeline():
     import pipeline as pipe
     topic = request.form.get("topic", "").strip()
-    duration = int(request.form.get("duration", 8))
+    duration = float(request.form.get("duration", 1))
     upload = bool(request.form.get("upload"))
     privacy = request.form.get("privacy", "private")
 
@@ -213,7 +213,7 @@ def generate_hooks_route():
 def generate_script():
     import script_writer
     topic = request.form.get("topic", "").strip()
-    duration = int(request.form.get("duration", 8))
+    duration = float(request.form.get("duration", 1))
     niche = request.form.get("niche", "facts")
     selected_hook = request.form.get("selected_hook", "").strip() or None
     if not topic:
