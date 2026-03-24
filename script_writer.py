@@ -50,25 +50,32 @@ NICHES = {
     },
     "history": {
         "label": "History",
-        "tone": "like a genuinely excited person who actually knows the history and can't believe how wild it is — not a textbook, not a dramatic movie trailer, just a real person being honest about how insane the past was",
-        "style": """Open cold with the most jaw-dropping fact or scene — no intro whatsoever.
+        "tone": "documentary authority with human warmth — Ken Burns energy but faster, more direct. Calm and authoritative, not excited YouTuber, not dry academic. Someone who knows the history and genuinely can't believe how wild it is.",
+        "style": """Open cold. No intro. No channel name. The hook IS the first sentence.
 
-The goal is to be THREE things at once: informative (real facts, real context, real history), casual (sounds like a real person talking, never an essay), and exciting (makes the viewer feel genuine wonder or disbelief).
+Use the QQPP HOOK FORMULA for the first 15 seconds:
+Q — Question that creates curiosity
+Q — Second question that deepens it
+P — Promise of what they'll learn/see
+P — Preview that teases the reveal
 
-Structure each section like this: drop a wild fact → explain the context behind it in plain language → connect it to something the viewer can visualize or feel → reveal the next wild thing.
+Example: 'Do you know what actually happened the night Rome fell? Not the version in textbooks. The version they don't teach in schools. Here's what the historians found.'
 
-Say 'nobody knows how they did it' not 'the methodology remains undetermined'.
-Say 'back then' not 'during that era'.
-Say 'they figured out' not 'scholars determined'.
-Use scale and comparison: 'That's taller than a 20-story building. And they built it without cranes.'
-Use wonder: 'Think about what that actually means...'
-Make the past feel immediate — use present tense descriptions when describing historical scenes.
-Sound like you personally can't believe this is real, because it genuinely is that wild.
+THREE-ACT STRUCTURE:
+Act 1 — The Mystery (0-15s): Establish what's unknown or surprising. Create the open loop — a question the viewer NEEDS answered. Don't answer it yet.
+Act 2 — The Revelation (15-45s): Deliver the main content. Supporting facts that deepen the impact. One pattern interrupt every 20-30 seconds — new visual, new surprising detail.
+Act 3 — The Resonance Close (45-60s): End with energy, not a fade. One final line that reframes everything said before. Optional: 'Which [topic] should we cover next?'
 
-Every 90-120 seconds add a pattern interrupt — shift the angle, ask a sharp question, or drop a surprise before continuing.
-End sections with a teaser for what comes next — never let a section land flat.
-Use curiosity gaps: start a revelation, pause with '...', then land the payoff after a beat.""",
-        "hook_style": "drop cold into the single most shocking moment — no intro. Use one of these formulas: drop mid-scene ('It's [year]. [Something unexpected happening].'), counterintuitive reversal ('[Common belief]. That's completely backwards.'), scale shock ('[ancient thing] was [modern comparison] — built without [modern tool]'), or personal stakes ('This man had 48 hours to [action] before [consequence].')",
+LANGUAGE RULES:
+- Present tense for historical scenes: 'Caesar walks into the Senate. He doesn't know it's his last morning.'
+- Second person: 'You're looking at something that shouldn't exist.'
+- Specific details, not vague: 'She was 5'2" with auburn hair' not 'she was described as attractive'
+- Scale comparisons: 'That's taller than a 20-story building. Built without cranes.'
+- Opening word patterns that perform: 'For centuries...', 'Most people don't know...', 'In [year], [surprising thing]', 'The history books got this wrong.'
+- Use '...' for pauses before reveals — silence is a tool
+
+NEVER: 'Hi everyone', channel intro, 'basically', 'kind of', 'some historians believe' in the hook (save qualifications for AFTER the hook), slow builds, section fade-outs that land flat.""",
+        "hook_style": "QQPP formula — Q: one curiosity question. Q: deepen it. P: promise what they'll see. P: preview the reveal. Or drop cold mid-scene: 'It's [year]. [Unexpected thing is happening].' Or counterintuitive reversal: '[Common belief]. That's completely backwards.' Or personal stakes: 'This man had 48 hours to [action] before [consequence].'",
         "optimal_minutes": 15,
         "cpm": "$5-10",
     },
@@ -119,6 +126,52 @@ TOPICS THAT PERFORM BEST:
         "hook_style": "one raw sentence — the single most shocking or counterintuitive thing about this topic, no setup. Viewer thinks 'wait, that can't be right' in the first 2 seconds.",
         "optimal_minutes": 1,
         "cpm": "$3-6 (Shorts CPM lower but volume/reach compensates — optimize for replays and shares)",
+    },
+    "face_reconstruction": {
+        "label": "Historical Face Reconstruction (RelaxHistoryAI Style)",
+        "tone": "calm, warm, documentary authority — not dramatic, not YouTube-hype. Like someone who has spent years studying this person and wants you to finally see them as a real human being.",
+        "style": """This is the RelaxHistoryAI / photorealistic face reveal format. The VISUAL is the content. The narration exists to create emotional context for the face, nothing else.
+
+QQPP HOOK FORMULA (first 15 seconds):
+Q — 'Do you know what [figure] actually looked like?'
+Q — 'Not the portrait. The real person.'
+P — 'We combined every historical source — portraits, coins, written descriptions, ethnographic records — and fed it into AI.'
+P — 'Here's what [figure] probably actually looked like.'
+
+THREE-ACT STRUCTURE:
+Act 1 — The Mystery (0-15s): Why have we never seen their real face? What's surprising or unknown about their appearance? Create the open loop.
+Act 2 — The Reveal (15-50s): Deliver historical context that deepens the upcoming reveal. 2-3 specific physical details from historical records. Let the voice slow down before the reveal moment — let silence work.
+Act 3 — The Resonance Close (50-60s): One closing line that makes it personal and human. 'This is the face that [changed the world / fell in love / walked into history].' Make them feel like they just met someone.
+
+SCRIPT LANGUAGE RULES:
+- Specific physical details: 'Contemporary accounts describe her as having auburn hair, olive skin, and eyes that observers consistently described as striking — not blue, not brown, but something between'
+- Present tense during the reveal: 'This is her. This is what she looked like.'
+- Use the word 'actually' and 'real' deliberately — they activate the emotional mechanism
+- Slow down before the reveal moment — write shorter sentences, use '...' for pauses
+- No filler, no hedging in the hook. No 'some historians believe' until AFTER the hook lands.
+- No channel name intro. No 'Hi everyone'. The face IS the intro.
+
+HIGH-PERFORMING FIGURE CATEGORIES:
+- Founding fathers / major historical leaders (Washington, Lincoln, Caesar)
+- Ancient female rulers (Cleopatra, Nefertiti, Elizabeth I, Hatshepsut)
+- Famous tragic figures (Anastasia Romanov, Anne Boleyn, Marie Antoinette)
+- Non-European leaders underrepresented in Western portraits (Geronimo, Saladin, Sitting Bull)
+- Scientists and thinkers with rare portraits (Marie Curie, Tesla, Einstein in youth)
+- 'Debated appearance' figures (Shakespeare, historical Jesus, Richard III)
+
+THE 60-SECOND HOOK TEST:
+Can you state it in one sentence that stops scrolling?
+BAD: 'What Cleopatra looked like'
+GOOD: 'This is what Cleopatra actually looked like — and she wasn't Greek'
+
+B-ROLL FOR THIS FORMAT:
+- [B-ROLL: original historical portrait/painting of figure, close detail]
+- [B-ROLL: slow zoom into portrait face]
+- [B-ROLL: photorealistic AI reconstruction of figure — hold 7 seconds]
+- Keep text overlays OFF the reconstructed face — the face must breathe""",
+        "hook_style": "QQPP — 'Do you know what [figure] actually looked like? Not the portrait — the real person. We fed every historical source into AI. Here's what they probably actually looked like.'",
+        "optimal_minutes": 1,
+        "cpm": "$3-8 (Shorts CPM — optimize for replays, shares, and comment engagement)",
     },
     "science": {
         "label": "Science & Space",

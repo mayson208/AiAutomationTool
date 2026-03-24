@@ -12,19 +12,20 @@ CLIP_MAX_DURATION = 4
 CROSSFADE_DURATION = 0.3
 KEN_BURNS_ZOOM = 0.05
 
-# Caption settings — tuned to viral Shorts specs
+# Caption settings — tuned to viral Shorts specs (research: yellow text dominant in history genre)
 CAPTION_FONTSIZE = 76
 CAPTION_WORDS_PER_GROUP = 4          # research: 4-6 words per caption group
-CAPTION_Y_RATIO = 0.68               # center third, avoid bottom 25%
+CAPTION_Y_RATIO = 0.78               # bottom 20-30% of frame — dominant position in genre
 CAPTION_PRE_ROLL = 0.15             # appear 0.15s before audio word (feels snappier)
 CAPTION_BG_OPACITY = 160            # semi-transparent black box (0-255)
-CAPTION_COLOR = (255, 255, 255)
+CAPTION_COLOR = (255, 220, 50)       # YELLOW — dominant caption style in viral history Shorts
 CAPTION_SHADOW_COLOR = (0, 0, 0)
-CAPTION_HIGHLIGHT_COLOR = (255, 220, 50)   # yellow for active word
+CAPTION_HIGHLIGHT_COLOR = (255, 255, 255)  # white highlight on active word (contrast against yellow)
 
-# Color grading — research: +10-15% saturation, slight contrast for scroll environment
-COLOR_SATURATION_BOOST = 1.15
-COLOR_CONTRAST_BOOST = 1.08
+# Color grading — warm neutral grade for history content (ancient = warm, modern era = cooler)
+COLOR_SATURATION_BOOST = 1.12        # slight saturation boost for scroll environment
+COLOR_CONTRAST_BOOST = 1.06
+COLOR_WARMTH = True                  # apply subtle warm tint (historical feel without fakeness)
 
 
 def _apply_ken_burns(clip, zoom_in=True):
@@ -324,7 +325,7 @@ def assemble_video(voiceover_path: str, clip_paths: list, output_filename: str =
             except Exception:
                 pass
 
-            # Color grade — boost saturation + contrast for scroll environment
+            # Color grade — warm neutral for history (research: slight warmth = historical feel without fakeness)
             try:
                 import numpy as np
                 from PIL import Image, ImageEnhance
@@ -333,6 +334,12 @@ def assemble_video(voiceover_path: str, clip_paths: list, output_filename: str =
                     pil = Image.fromarray(frame)
                     pil = ImageEnhance.Color(pil).enhance(COLOR_SATURATION_BOOST)
                     pil = ImageEnhance.Contrast(pil).enhance(COLOR_CONTRAST_BOOST)
+                    if COLOR_WARMTH:
+                        # Subtle warm tint: slightly boost reds, slightly reduce blues
+                        arr = np.array(pil, dtype=np.float32)
+                        arr[:, :, 0] = np.clip(arr[:, :, 0] * 1.04, 0, 255)  # reds +4%
+                        arr[:, :, 2] = np.clip(arr[:, :, 2] * 0.96, 0, 255)  # blues -4%
+                        pil = Image.fromarray(arr.astype(np.uint8))
                     return np.array(pil)
 
                 clipped = clipped.fl_image(_color_grade)

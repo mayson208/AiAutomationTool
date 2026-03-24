@@ -37,6 +37,8 @@ NICHE_VOICE_SETTINGS = {
     "history":       {"stability": 0.70, "similarity_boost": 0.80, "style": 0.30, "use_speaker_boost": True},
     # history_short: faster pacing, more energy, less stability = more natural urgency
     "history_short": {"stability": 0.45, "similarity_boost": 0.80, "style": 0.55, "use_speaker_boost": True},
+    # face_reconstruction: slow, warm, documentary authority — calm reverence before the reveal
+    "face_reconstruction": {"stability": 0.80, "similarity_boost": 0.85, "style": 0.15, "use_speaker_boost": True},
     "science":       {"stability": 0.65, "similarity_boost": 0.80, "style": 0.25, "use_speaker_boost": True},
     "selfimprovement": {"stability": 0.55, "similarity_boost": 0.75, "style": 0.40, "use_speaker_boost": True},
     "horror":        {"stability": 0.60, "similarity_boost": 0.75, "style": 0.45, "use_speaker_boost": True},
