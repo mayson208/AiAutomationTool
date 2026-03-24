@@ -10,106 +10,106 @@ import config
 NICHES = {
     "finance": {
         "label": "Finance & Investing",
-        "tone": "authoritative, data-driven, professional",
-        "style": "Lead with a surprising statistic or counterintuitive insight. Use numbered frameworks. Cite sources. Address common mistakes. Include actionable takeaways.",
-        "hook_style": "shocking financial statistic or common misconception",
+        "tone": "straight-talking, sharp, like a friend who actually knows money",
+        "style": "Hit them with a shocking number or counterintuitive money fact in the first sentence — no setup. Short punchy sentences. Use contractions. Say 'most people' not 'numerous individuals'. Say 'back then' not 'during that period'. Sound like a smart friend explaining why they're doing something most people get wrong. Every 90 seconds, drop a curiosity gap — tease the next piece of info before fully landing it.",
+        "hook_style": "a shocking money stat or the thing most people get completely backwards",
         "optimal_minutes": 12,
         "cpm": "$15-50",
     },
     "motivation": {
         "label": "Motivational & Quotes",
-        "tone": "passionate, inspiring, urgent",
-        "style": "Open with a powerful story or quote. Build emotional momentum. Use short punchy sentences. Include a call to transformation. End with a challenge to the viewer.",
-        "hook_style": "powerful story or emotional question",
+        "tone": "urgent, real, emotionally direct — not a self-help book",
+        "style": "Open with a single powerful line — a gut-punch truth or a shocking story moment. No warm-up. Short sentences. Use 'you' constantly. Say 'you're' not 'one is'. Speak like someone who's been through it and is telling you what they wish they'd known. Build momentum sentence by sentence. End with a direct challenge to the viewer, not a summary.",
+        "hook_style": "a raw emotional truth or a story dropped in mid-action",
         "optimal_minutes": 6,
         "cpm": "$5-10",
     },
     "facts": {
         "label": "Did You Know / Facts",
-        "tone": "curious, enthusiastic, educational",
-        "style": "Start with the most shocking fact. Keep each fact concise (30-60 seconds). Include surprising context. Use curiosity gaps between facts. End with a mind-blowing conclusion.",
-        "hook_style": "the most shocking fact in the video",
+        "tone": "enthusiastic, curious, like a friend texting you something wild they just found out",
+        "style": "Lead with the most mind-blowing fact — no intro, no context, just drop it. Keep each fact to 30-60 seconds of tight narration. Use '...' for dramatic pauses. Say 'nobody knows why' not 'the cause remains undetermined'. Say 'they figured it out' not 'scientists determined'. Use second person: 'You're looking at something that shouldn't exist.' Between facts, tease the next one with a curiosity gap.",
+        "hook_style": "the single most shocking fact in the whole video, delivered raw with no setup",
         "optimal_minutes": 8,
         "cpm": "$4-10",
     },
     "top10": {
         "label": "Top 10 Lists",
-        "tone": "entertaining, confident, engaging",
-        "style": "Start at #10, build toward #1. Give each item equal weight. Include surprising entries. Use teases ('wait until you see #3'). Keep rankings defensible.",
-        "hook_style": "tease about the surprising #1 pick",
+        "tone": "confident, entertaining, slightly conspiratorial",
+        "style": "Start at #10, build to #1. Open by teasing the #1 pick with a one-liner — don't explain it yet. Keep each entry tight: one shocking sentence to introduce it, then the payoff. Use second person throughout. Tease upcoming entries: 'Wait till you get to #3.' Short sentences. No academic tone. Sound like you're running through a list with a friend.",
+        "hook_style": "a one-line tease about the #1 pick that makes them have to keep watching",
         "optimal_minutes": 10,
         "cpm": "$4-8",
     },
     "truecrime": {
         "label": "True Crime",
-        "tone": "serious, suspenseful, investigative",
-        "style": "Open at the most dramatic moment. Build timeline chronologically. Use cliffhangers between sections. Include investigative details. Handle sensitivity appropriately.",
-        "hook_style": "the most dramatic moment of the story",
+        "tone": "serious, tense, like a true crime podcast but tighter",
+        "style": "Open at the most dramatic moment — drop in mid-scene, no intro. 'It was 2 AM. Nobody heard anything.' Short declarative sentences build dread. Then pull back and build the timeline. Use cliffhangers before section breaks. Say 'nobody could explain it' not 'the circumstances remained unclear'. Use contractions. Build tension with short incomplete sentences. Handle real victims with respect.",
+        "hook_style": "the single most chilling moment of the story, dropped in cold with no setup",
         "optimal_minutes": 20,
         "cpm": "$4-9",
     },
     "history": {
         "label": "History",
-        "tone": "authoritative, storytelling, cinematic",
-        "style": "Open with a dramatic scene. Provide rich historical context. Use storytelling arcs. Connect past events to modern relevance. Include lesser-known details.",
-        "hook_style": "a dramatic scene or surprising historical fact",
+        "tone": "cinematic, direct, like a documentary narrator who's actually excited",
+        "style": "Open with a shocking historical fact or a scene dropped in mid-action — no 'Throughout history...' or 'In this video we will explore...' Short sentences. Use '...' for dramatic pauses. Say 'nobody knows how they did it' not 'the methodology remains undetermined'. Say 'back then' not 'during that era'. Make the past feel immediate and wild. Connect it to something the viewer can feel — scale, danger, strangeness. Sound like you personally can't believe this is real.",
+        "hook_style": "a jaw-dropping historical fact or scene delivered cold in the first two sentences",
         "optimal_minutes": 15,
         "cpm": "$5-10",
     },
     "science": {
         "label": "Science & Space",
-        "tone": "wonder-inducing, informative, accessible",
-        "style": "Start with a mind-bending concept. Explain complex ideas simply. Use analogies. Build from basic to advanced. Include recent discoveries. End with implications.",
-        "hook_style": "a mind-bending question or recent discovery",
+        "tone": "wonder-struck, accessible, like someone who just learned something that broke their brain",
+        "style": "Open with a mind-bending concept stated simply — no jargon, no setup. 'There's a place in the universe where time moves slower. You could live there for a year and come back to find 10 years have passed on Earth.' Short sentences. Use analogies to everyday things. Say 'we still don't know why' not 'the underlying mechanism remains elusive'. Second person: 'You're not going to believe what they found.' Use '...' for pauses that let the weird stuff land.",
+        "hook_style": "a single mind-breaking concept stated in plain language with no setup",
         "optimal_minutes": 10,
         "cpm": "$6-12",
     },
     "selfimprovement": {
         "label": "Self Improvement",
-        "tone": "warm, encouraging, actionable",
-        "style": "Open with a relatable struggle. Present a clear system or framework. Use numbered steps. Include scientific backing. Give specific actionable advice. End with encouragement.",
-        "hook_style": "a relatable pain point or surprising productivity insight",
+        "tone": "warm but direct — like a friend who stopped making excuses and is telling you what actually worked",
+        "style": "Open with a relatable struggle stated bluntly — not 'Many individuals find it challenging' but 'Most people quit in the first week. Here's why.' Short sentences. Use 'you' constantly. Use contractions. Give specific actionable advice in plain language. Say 'the trick is' not 'the optimal approach involves'. Back up claims conversationally: 'There's actually research on this and it's pretty wild.' End with a direct challenge, not a summary.",
+        "hook_style": "a blunt relatable truth about a struggle, stated in one punchy sentence",
         "optimal_minutes": 10,
         "cpm": "$5-10",
     },
     "horror": {
         "label": "Horror & Scary Stories",
-        "tone": "atmospheric, tense, suspenseful",
-        "style": "Build atmosphere slowly. Use sensory details. Pace tension carefully. Include surprising twists. Use cliffhangers. Handle horror elements responsibly.",
-        "hook_style": "the most unsettling element of the story",
+        "tone": "atmospheric, deeply unsettling, like someone whispering something they shouldn't know",
+        "style": "Open with the single most unsettling detail — no buildup, just drop it cold. 'The door was locked from the inside. Nobody was home.' Short sentences that punch. Use sensory details: sounds, smells, textures. Build dread through what's NOT explained. Use '...' for pauses that let the horror land. Say 'nobody ever figured out what it was' not 'the identity of the entity remained unverified'. Handle real events with care.",
+        "hook_style": "the single most chilling unexplained detail, stated cold in one sentence",
         "optimal_minutes": 15,
         "cpm": "$3-7",
     },
     "meditation": {
         "label": "Meditation & Sleep",
-        "tone": "calm, soothing, gentle",
-        "style": "Open softly. Use slow, measured pacing. Include breathing cues. Guide visualization. Use repetitive calming patterns. Avoid sudden changes in tone.",
-        "hook_style": "a peaceful invitation to relax",
+        "tone": "calm, slow, like a gentle voice in a quiet room",
+        "style": "Open with a soft invitation — no shock, just ease them in. Long gentle sentences. Use breathing cues naturally: 'Take a slow breath...' Guide visualization step by step. Repeat calming phrases. Avoid sudden changes in pace or tone. Use '...' for natural breathing pauses. This is the one niche where slow and soft beats punchy.",
+        "hook_style": "a gentle peaceful invitation to let go and relax",
         "optimal_minutes": 30,
         "cpm": "$3-6",
     },
     "news": {
         "label": "News Summary",
-        "tone": "professional, balanced, clear",
-        "style": "Lead with the most important development. Provide context and background. Include multiple perspectives. Keep it factual. Summarize clearly. Update viewers on what to watch.",
-        "hook_style": "the most significant news development",
+        "tone": "clear, direct, no-spin — like a trusted friend who read everything so you don't have to",
+        "style": "Lead with the single most important development in one plain sentence. No 'In today's news...' or 'We're going to cover...' Just: what happened. Then give context in short punchy sentences. Say 'what this means for you' not 'the implications for the general public'. Use contractions. Keep it factual but conversational. End with what to watch next, stated simply.",
+        "hook_style": "the most significant thing that happened, stated in one plain direct sentence",
         "optimal_minutes": 7,
         "cpm": "$4-8",
     },
     "roblox": {
         "label": "Roblox Gaming",
-        "tone": "energetic, upbeat, slightly dramatic — teen and young adult audience",
-        "style": "State the challenge or premise in the first 5 seconds. Use first-person framing ('I tried...', 'I survived...'). Build a challenge arc with setup, tension, and resolution. Include commentary and reaction moments. Fast-paced with humor. IMPORTANT: Frame as teen/adult content — avoid child-directed language to prevent 'Made for Kids' classification which eliminates monetization.",
-        "hook_style": "state the bold challenge or premise immediately — shock them in 5 seconds",
+        "tone": "energetic, slightly dramatic, fast — teen and young adult audience",
+        "style": "State the challenge in the first 5 seconds flat. No intro. 'I tried to survive 24 hours in the hardest Roblox game ever made. Here's what happened.' First person. Short fast sentences. React to what's happening in real time. Build tension, then a payoff. Use humor. Keep it moving — no dead air. IMPORTANT: Frame as teen/adult content — avoid child-directed language to prevent 'Made for Kids' classification which eliminates monetization.",
+        "hook_style": "the bold challenge or crazy premise stated immediately in 5 seconds — no warmup",
         "optimal_minutes": 12,
         "cpm": "$2-4 (WARNING: 'Made for Kids' label drops CPM to ~$0.30 — frame as teen/adult content)",
     },
 }
 
 HOOK_FORMULAS = [
-    "SHOCK: Start with the most shocking, counterintuitive, or surprising element related to this topic. Make the viewer think 'I never knew that.'",
-    "QUESTION: Open with a powerful question that the viewer desperately wants answered. Make it personal and relatable.",
-    "STORY: Begin in the middle of a dramatic story or scene. Drop the viewer into action immediately.",
+    "SHOCK: Drop the single most shocking or counterintuitive fact about this topic — no intro, no context, just the raw statement. Make them think 'wait, what?' in the first two seconds.",
+    "QUESTION: Ask one sharp, personal question the viewer immediately wants answered — something that makes them feel like they've been missing something. No setup before the question.",
+    "STORY: Drop into a dramatic scene mid-action — no introduction, no context. Put the viewer inside the moment. One or two short sentences maximum before the payoff.",
 ]
 
 def _save_script(topic: str, niche: str, result: dict) -> str:
@@ -134,7 +134,17 @@ def generate_hooks(topic: str, niche: str) -> dict:
 Niche: {niche_info['label']}
 Tone: {niche_info['tone']}
 
-Each hook is the opening 20-30 seconds of the video (spoken aloud, ~75-100 words each).
+Each hook is the opening 20-30 seconds of narration (spoken aloud, ~60-80 words each).
+
+CRITICAL RULES FOR ALL THREE HOOKS:
+- The very first sentence must be the hook — a shocking statement or sharp question. Zero setup.
+- Short punchy sentences. 1-2 sentences per thought max.
+- Use contractions: didn't, couldn't, wasn't, they're, you're.
+- Use second person where natural: "You're looking at...", "Think about that."
+- Use "..." for dramatic pauses that let the wild stuff land.
+- NEVER start with: "In this video", "Today we're going to", "Let's explore", "Throughout history", "It's worth noting"
+- NO academic language. Say "a lot of people" not "numerous individuals". Say "figured out" not "determined". Say "back then" not "during that period".
+- Sound like a smart friend who just learned something wild and can't wait to tell you.
 
 Hook 1 — SHOCK FORMULA: {HOOK_FORMULAS[0]}
 Hook 2 — QUESTION FORMULA: {HOOK_FORMULAS[1]}
@@ -187,14 +197,37 @@ def generate_script(topic: str, duration_minutes: int = None, niche: str = "fact
 Niche: {niche_info['label']}
 Tone: {niche_info['tone']}
 Style guidelines: {niche_info['style']}
-Target length: {duration_minutes} minutes
+Target length: {duration_minutes} minutes (~{duration_minutes * 150} words of spoken narration)
 {hook_instruction}
 
+VOICE AND STYLE — NON-NEGOTIABLE:
+- Write exactly how a person talks, not how a person writes.
+- Short punchy sentences. 1-2 sentences per thought. Max.
+- Use contractions everywhere: didn't, couldn't, wasn't, they're, you're, it's, that's.
+- Use "..." for dramatic pauses where the information should land before moving on.
+- Use second person naturally: "You're looking at...", "Think about that for a second.", "You probably didn't know this."
+- Sound like a smart friend telling you something wild they just learned — not a textbook, not a documentary voiceover, not an essay.
+
+BANNED PHRASES — NEVER USE ANY OF THESE:
+- "In this video" / "In today's video"
+- "Today we're going to" / "We're going to explore"
+- "Let's explore" / "Let's dive into" / "Let's take a look"
+- "It's worth noting" / "It is important to note"
+- "Throughout history" / "Historians believe" / "Scholars have long"
+- "In conclusion" / "To summarize" / "As we've seen"
+- "Numerous individuals" → say "a lot of people"
+- "During that period" → say "back then"
+- "Determined" / "ascertained" → say "figured out"
+- "Constructed" → say "built"
+- "Demonstrated" → say "showed"
+- "Utilized" → say "used"
+- "In order to" → say "to"
+
 RETENTION RULES (apply throughout):
-- Pattern interrupt every 90-120 seconds (change topic angle, ask question, reveal surprise)
-- Open loop: hint at upcoming information to keep viewers watching
-- Curiosity gap: start explaining something, pause, continue after B-roll note
-- Never start a new section without a transition hook
+- Hook must be a shocking statement or sharp question in the very first sentence — zero setup before it.
+- Pattern interrupt every 90-120 seconds: shift angle, ask a sharp question, reveal a surprise.
+- Curiosity gap: start explaining something, pause with "...", continue after B-roll note.
+- Every section transition must tease what's next — never end a section flat.
 
 FORMAT (use exactly these labels):
 TITLE: [YouTube title with number or power word, 60 chars max]
@@ -205,21 +238,18 @@ SCRIPT:
 [HOOK - 0:00]
 [hook content]
 
-[INTRO - 0:30]
-[intro content]
-
 [SECTION 1 - timestamp]
 [content with [B-ROLL: description] markers]
 
 [continue sections...]
 
 [CTA - timestamp]
-[like, comment, subscribe]
+[like, comment, subscribe — keep it brief and natural, not formal]
 
 [OUTRO - timestamp]
-[closing]
+[closing — one punchy line, not a summary]
 
-Write naturally as spoken dialogue. Include [B-ROLL: description] markers every 45-90 seconds."""
+Include [B-ROLL: description] markers every 45-90 seconds of narration."""
 
         message = client.messages.create(
             model=config.CLAUDE_MODEL,
@@ -229,13 +259,38 @@ Write naturally as spoken dialogue. Include [B-ROLL: description] markers every 
         script_text = message.content[0].text
 
         # Run humanizer pass
-        humanizer_prompt = f"""Review this YouTube script and make it sound more natural and human.
-Remove any AI writing patterns: overly formal phrasing, repetitive sentence structures, generic transitions.
-Make it conversational, punchy, and authentic to the {niche_info['label']} niche.
-Keep all [B-ROLL:] markers, timestamps, and section headers exactly as they are.
-Only improve the spoken dialogue portions.
+        humanizer_prompt = f"""You are editing a YouTube narration script. Your job is to strip out every remaining trace of AI writing and make it sound like a real person talking — specifically, like a smart, enthusiastic friend who just learned something wild and wants to tell you about it.
 
-Script:
+GO THROUGH THE ENTIRE SCRIPT AND FIX EVERY INSTANCE OF:
+- Sentences longer than 2 thoughts — split them up
+- Any formal or academic phrasing — replace with casual speech
+- Missing contractions — "do not" → "don't", "they are" → "they're", "it is" → "it's"
+- Generic transitions like "Furthermore", "Additionally", "Moreover", "In addition" — cut or replace with "And", "But", "So", "Here's the thing"
+- Any phrase that sounds like it was written to be read, not spoken — rewrite it as speech
+- Spots where a "..." pause would help the information land — add them
+- Any place that still sounds like a YouTube intro ("Today we're going to...", "In this video...", "Let's explore...") — cut it, start with the hook directly
+
+BANNED WORDS AND PHRASES — replace every single one:
+- "numerous" → "a lot of" / "tons of"
+- "individuals" → "people"
+- "constructed" → "built"
+- "demonstrated" → "showed"
+- "utilized" → "used"
+- "determined" / "ascertained" → "figured out"
+- "during that period" → "back then"
+- "it is worth noting" → cut it or say "here's the thing"
+- "in order to" → "to"
+- "the construction of" → "building"
+- "throughout history" → cut it
+
+KEEP INTACT — do not change:
+- All [B-ROLL: ...] markers
+- All section headers and timestamps
+- All TITLE, DESCRIPTION, TAGS sections
+
+Only rewrite the spoken narration. Return the complete script with all formatting preserved.
+
+Script to humanize:
 {script_text}"""
 
         human_message = client.messages.create(
