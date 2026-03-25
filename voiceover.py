@@ -35,6 +35,8 @@ NICHE_VOICE_SETTINGS = {
     "top10":         {"stability": 0.60, "similarity_boost": 0.75, "style": 0.35, "use_speaker_boost": True},
     "truecrime":     {"stability": 0.65, "similarity_boost": 0.80, "style": 0.40, "use_speaker_boost": True},
     "history":       {"stability": 0.70, "similarity_boost": 0.80, "style": 0.30, "use_speaker_boost": True},
+    # ranking: confident sports-commentator energy, builds toward #1
+    "ranking":       {"stability": 0.40, "similarity_boost": 0.80, "style": 0.65, "use_speaker_boost": True},
     # history_short: faster pacing, more energy, less stability = more natural urgency
     "history_short": {"stability": 0.45, "similarity_boost": 0.80, "style": 0.55, "use_speaker_boost": True},
     # face_reconstruction: slow, warm, documentary authority — calm reverence before the reveal

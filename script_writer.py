@@ -8,6 +8,50 @@ from pathlib import Path
 import config
 
 NICHES = {
+    "ranking": {
+        "label": "Ranking / Countdown (Shorts)",
+        "tone": "confident, fast, authoritative — like a sports commentator announcing the final standings. Build tension every entry. Make #1 feel inevitable but still surprising.",
+        "style": """This is a ranking/countdown YouTube Short. 45–55 seconds. Every entry escalates. #1 must feel earned.
+
+SCRIPT STRUCTURE (follow exactly):
+0:00–0:03  HOOK: Flash the topic + tease #1. 'These are the 5 most powerful militaries on Earth — and #1 isn't who you think.' OR show all 5 entries in 1 second, then count down.
+0:03–0:12  #5: One fact. One visual cue. 'Coming in at #5...'
+0:12–0:21  #4: Slightly more impressive. 'But #4 makes #5 look weak...'
+0:21–0:28  #3: Pace quickens. Tease what's coming. 'And this is where it gets insane...'
+0:28–0:35  #2: 'Almost took the top spot. Almost.'
+0:35–0:44  #1: Half-second silence. Bold reveal. One definitive stat. Make it land.
+0:44–0:47  CTA: 'Comment if you agree.' — this is the debate trigger that drives the algorithm.
+
+TENSION RULES:
+- Tease #1 at #3: 'Wait till you see what's coming...'
+- Tease #1 at #2: 'This barely missed #1 — here's why.'
+- Use 'But...' to connect entries and maintain momentum
+- Each entry should be MORE impressive than the last — no exceptions
+
+LANGUAGE RULES:
+- One fact per entry. Not two. One.
+- Short declarative sentences. 8 words max.
+- Present tense: 'This country fields 1.4 million active troops.'
+- Numbers over descriptions: '1.4 million' not 'over a million'
+- No filler. No hedging. Confident declarations only.
+- Contractions everywhere.
+
+TOPIC TIERS THAT PERFORM BEST:
+- Countries: military power, GDP, population, size, nuclear arsenal
+- Sports: all-time rankings, GOAT debates, records
+- History: most powerful empires, deadliest battles, most influential leaders
+- Pop culture: movies, albums, athletes ranked
+- Nature: fastest, largest, most dangerous
+
+B-ROLL RULES:
+Every entry gets a [B-ROLL: specific visual] marker ABOVE its narration.
+For countries: flag, map, military equipment, landmark.
+For sports: player in action, trophy, stat graphic.
+Match the visual to what's being said — always.""",
+        "hook_style": "'These are the [N] most/best/strongest [X] — and #1 will surprise you.' OR flash all entries in 1 second, then count down. The hook must tease #1 without revealing it.",
+        "optimal_minutes": 1,
+        "cpm": "$4-8 (high engagement, high debate = strong algorithm signal)",
+    },
     "finance": {
         "label": "Finance & Investing",
         "tone": "straight-talking, sharp, like a friend who actually knows money",

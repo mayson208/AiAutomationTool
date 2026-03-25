@@ -54,6 +54,7 @@
         <label>Niche <span style="color:var(--text-muted);font-size:11px">(optimizes all settings)</span></label>
         <select name="niche" id="nicheSelect" class="form-select">
           <optgroup label="— Shorts Optimized —">
+            <option value="ranking">&#127942; Ranking / Countdown (60s)</option>
             <option value="history_short">&#128081; History Short (60s)</option>
             <option value="face_reconstruction">&#129504; Face Reconstruction (RelaxHistoryAI)</option>
             <option value="facts">&#129300; Facts / Did You Know</option>
@@ -160,6 +161,7 @@
   const formatSel     = document.getElementById('formatSelect');
 
   const NICHE_DEFAULTS = {
+    'ranking':            { duration: '1',  format: 'shorts' },
     'history_short':      { duration: '1',  format: 'shorts' },
     'face_reconstruction':{ duration: '1',  format: 'shorts' },
     'facts':              { duration: '1',  format: 'shorts' },
